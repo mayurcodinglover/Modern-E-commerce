@@ -6,7 +6,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Role {
-  id        BigInt   @id @default(autoincrement())
+  id        String   @id @default(cuid())   // ✅ No serial type needed
   name      String   @unique @db.VarChar(50)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
   users     User[]
@@ -23,12 +23,12 @@ model Role {
 }
 
 model User {
-  id              BigInt   @id @default(autoincrement())
+  id              String   @id @default(cuid())   // ✅ No serial type needed
   firstName       String   @map("first_name") @db.VarChar(100)
   lastName        String   @map("last_name") @db.VarChar(100)
   email           String   @unique @db.VarChar(255)
   passwordHash    String   @map("password_hash")
-  roleId          BigInt   @map("role_id")
+  roleId          String   @map("role_id")        // ✅ Match String type
   profileImageUrl String?  @map("profile_image_url")
   isActive        Boolean  @default(true) @map("is_active")
   emailVerified   Boolean  @default(false) @map("email_verified")
