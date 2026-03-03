@@ -2,8 +2,6 @@ import {NextResponse} from "next/server";
 import prisma from "../../../../lib/prisma";
 import bcrypt from "bcryptjs";
 import { signAccessToken, signRefreshToken, refreshCookieOptions } from "../../../../lib/jwt";
-import { sign } from "crypto";
-import { refresh } from "next/cache";
 
 export async function POST(request){
     try {
@@ -21,19 +19,39 @@ export async function POST(request){
         }
 
         const existingUser=await prisma.user.findUnique({
-            where:{email:email.toLowerCase().trim()}
+            where:{email:email.toLowerCase().trim()},
+            select:{
+                id:true,
+                firstName:true,
+                lastName:true,
+                email:true,
+                passwordHash:true,
+                isActive:true,
+                emailVerified:true,
+                profileImageUrl:true,
+                createdAt:true,
+                role:{select:{name:true}}
+            }
         });
         if(!existingUser){
             return NextResponse.json({success:false,message:"Invalid email or password"},{status:401});
+        }
+        if(!existingUser.isActive)
+        {
+            return NextResponse.json({success:false,message:"Your account has been deactivated Please contact Support"},{status:403})
         }
         const passwordMatch=await bcrypt.compare(password,existingUser.passwordHash);
         if(!passwordMatch)
         {
             return NextResponse.json({success:false,message:"Invalid email or password"},{status:401});
         }
-
-        const accessToken=signAccessToken(existingUser);
-        const refreshToken=signRefreshToken(existingUser);
+        const tokenPayload={
+            id:existingUser.id,
+            email:existingUser.email,
+            role:existingUser.role.name
+        }
+        const accessToken=signAccessToken(tokenPayload);
+        const refreshToken=signRefreshToken({id:existingUser.id});
 
         const response=NextResponse.json({success:true,accessToken},{status:200});
         response.cookies.set("refreshToken",refreshToken,refreshCookieOptions);

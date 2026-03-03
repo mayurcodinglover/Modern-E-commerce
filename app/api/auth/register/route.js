@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../lib/prisma";
 import bcrypt from "bcryptjs";
-import { create } from "domain";
 import { refreshCookieOptions, signAccessToken, signRefreshToken } from "../../../../lib/jwt";
-import { refresh } from "next/cache";
 
 export async function POST(request){
     try {
@@ -13,7 +11,7 @@ export async function POST(request){
         //Input Validation
         if(!firstName || !lastName || !email || !password)
         {
-            return NextResponse.json({success:false,messsage:"All fields are required"},{status:400});
+            return NextResponse.json({success:false,message:"All fields are required"},{status:400});
         }
 
         if(typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
@@ -71,14 +69,14 @@ export async function POST(request){
         });
 
         const tokenPayload={
-            sub:User.id,
+            id:User.id,
             email:User.email,
             role:User.role.name,
         };
 
         const accessToken=signAccessToken(tokenPayload);
 
-        const refreshToken=signRefreshToken(tokenPayload);
+        const refreshToken=signRefreshToken({id:User.id});
 
         const response=NextResponse.json({
             success:true,
