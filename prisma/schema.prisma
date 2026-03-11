@@ -32,6 +32,8 @@ model User {
   profileImageUrl String?  @map("profile_image_url")
   isActive        Boolean  @default(true) @map("is_active")
   emailVerified   Boolean  @default(false) @map("email_verified")
+  emailVerificationToken  String?
+  emailVerificationExpiresAt  DateTime?
   createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz()
   role            Role     @relation(fields: [roleId], references: [id])
