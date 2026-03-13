@@ -23,7 +23,7 @@ export async function POST(request){
 
         if(password.length <6)
         {
-            return NextResponse.json({success:false,message:"Passwrord must be at least 6 characters"},{status:400});
+            return NextResponse.json({success:false,message:"Password must be at least 6 characters"},{status:400});
         }
 
         //Check Duplicate Email in the Database

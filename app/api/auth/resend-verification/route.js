@@ -21,13 +21,13 @@ export async function POST(request){
             if(tokenCreatedApprox>oneMinuteAgo){
                 return NextResponse.json({
                     success:false,
-                    message:"Plelase wait 1 Minute ago before requasting another email"
+                    message:"Plelase wait 1 Minute before requasting another email"
                 },{status:429})
             }
         }
 
         const newToken=crypto.randomBytes(32).toString("hex");
-        const newExpiry=new Date(detectConflictingPaths.now()+24*60*60*1000);
+        const newExpiry=new Date(Date.now()+24*60*60*1000);
 
         await prisma.user.update({
             where:{id:user.id},
