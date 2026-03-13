@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import prisma from "../../../../lib/prisma";
 import bcrypt from "bcryptjs";
 import { refreshCookieOptions, signAccessToken, signRefreshToken } from "../../../../lib/jwt";
+import crypto from "crypto";
+import { sendVerificationEmail } from "../../../../lib/email";
 
 export async function POST(request){
     try {
@@ -43,6 +45,9 @@ export async function POST(request){
             return NextResponse.json({success:false,message:"Default role not found"},{status:500});
         }
 
+        const verificationToken=crypto.randomBytes(32).toString("hex");
+        const verificationExpiry=new Date(Date.now()+24*60*60*1000) //24 hours;
+
         //create User
         const User=await prisma.user.create({
             data:{
@@ -51,6 +56,8 @@ export async function POST(request){
                 email:email.toLocaleLowerCase().trim(),
                 passwordHash,
                 roleId:defaultRole.id,
+                emailVerificationToken:verificationToken,
+                emailVerificationExpiresAt:verificationExpiry
             },
             select:{
                 id:true,
@@ -67,29 +74,9 @@ export async function POST(request){
                 }
             },
         });
+        sendVerificationEmail(User.email,User.firstName,verificationToken).catch((err)=>console.error("Email send Failed",err));
 
-        const tokenPayload={
-            id:User.id,
-            email:User.email,
-            role:User.role.name,
-        };
-
-        const accessToken=signAccessToken(tokenPayload);
-
-        const refreshToken=signRefreshToken({id:User.id});
-
-        const response=NextResponse.json({
-            success:true,
-            message:"User registered successfully",
-           data:{
-            User,
-            accessToken,
-           },
-        },{status:201});
-
-        response.cookies.set("refreshToken",refreshToken,refreshCookieOptions);
-
-        return response;
+       return Response.json({success:true,message:"Registration successfull Please check your email to verify your account",data:User},{status:201});
     } catch (error) {
         console.error("Registration error:",error);
         return NextResponse.json({success:false,message:"Internal Server Error"},{status:500});

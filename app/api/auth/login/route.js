@@ -45,6 +45,10 @@ export async function POST(request){
         {
             return NextResponse.json({success:false,message:"Invalid email or password"},{status:401});
         }
+        if(!existingUser.emailVerified)
+        {
+            return NextResponse.json({success:false,message:"Please verify your email before logging in. Check your inbox."},{status:403});
+        }
         const tokenPayload={
             id:existingUser.id,
             email:existingUser.email,
@@ -59,6 +63,5 @@ export async function POST(request){
     } catch (error) {
         console.error("Login error:",error);
         return NextResponse.json({success:false,message:"Internal server Error"},{status:500});
-        
     }
 }
