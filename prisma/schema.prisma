@@ -42,3 +42,15 @@ model User {
   @@index([roleId])
   @@map("users")
 }
+
+model Category {
+  id String @id @default(cuid())
+  name String @unique @db.VarChar(150)
+  slug String @unique @db.VarChar(150)
+  description String?
+  isActive Boolean @default(true) @map("is_active")
+  imageUrl String? @map("image_url") 
+  createdAt DateTime @default(now()) @db.Timestamptz() @map("created_at")
+
+  @@map("categories")
+}
