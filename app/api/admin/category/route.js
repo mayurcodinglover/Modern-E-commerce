@@ -6,7 +6,8 @@ const createCategoryValidation=z.object({
     name:z.string().min(1).max(150),
     slug:z.string().min(1).max(150),
     description:z.string().optional(),
-    imageUrl:z.string().optional()
+    imageUrl:z.string().optional(),
+    isActive:z.boolean()
 });
 
 export async function POST(req){
