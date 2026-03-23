@@ -15,7 +15,16 @@ export async function GET(req,{params}){
     try {
         const {id}=await params;
         const category=await prisma.category.findUnique({
-            where:{id}
+            where:{id},
+            include:{
+                subcategories:{
+                    where:{isActive:true},
+                    orderBy:{name:"asc"},
+                },
+                _count:{
+                    select:{subcategories:true}
+                }
+            }
         });
         if(!category)
         {
@@ -79,6 +88,45 @@ export async function PUT(req,{params}){
     }
 }
 
+export async function PATCH(req,{params})   
+{
+    try {
+        const {id}=await params;
+    const existing=await prisma.category.findFirst({
+        where:{id}
+    });
+    if(!existing)
+    {
+        return NextResponse.json({success:false,message:"Categories not found"},{status:404});
+    }
+    if(existing.isActive)
+    {
+        return NextResponse.json({success:false,message:"Category is already Active"},{status:400});
+    }
+    await prisma.$transaction([
+      prisma.subcategory.updateMany({
+        where: { categoryId: id },
+        data: { isActive: true },
+      }),
+      prisma.category.update({
+        where: { id },
+        data: { isActive: true },
+      }),
+    ]);
+    const updated=await prisma.category.findUnique({
+        where:{id},
+        include:{
+            subcategories:{orderBy:{name:"asc"}},
+            _count:{select:{subcategories:true}},
+        }
+    });
+    return NextResponse.json({success:true,message:"Categories and it's Subcategory reActivated successfully",data:updated},{status:200});
+    } catch (error) {
+        console.error(error)
+        return NextResponse.json({success:false,message:"Internal server Error"},{status:500});
+    }
+}
+
 export async function DELETE(req,{params})
 {
         try {
@@ -94,12 +142,18 @@ export async function DELETE(req,{params})
         {
             return NextResponse.json({success:false,message:"Category Already Deactivated"},{status:400});
         }
-        const deleted=await prisma.category.update({
+        await prisma.$transaction([
+            prisma.subcategory.updateMany({
+                where:{categoryId:id},
+                data:{isActive:false},
+            }),
+            prisma.category.update({
             where:{id},
                 data:{
                     isActive:false
                 },
-        });
+        }),
+        ]);
         return NextResponse.json({success:true,message:"Category Deactivated Successfully"},{status:200});
         } catch (error) {
             console.log(error);

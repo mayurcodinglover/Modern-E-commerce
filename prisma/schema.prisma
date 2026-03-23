@@ -51,6 +51,21 @@ model Category {
   isActive Boolean @default(true) @map("is_active")
   imageUrl String? @map("image_url") 
   createdAt DateTime @default(now()) @db.Timestamptz() @map("created_at")
+  subcategories Subcategory[]
 
   @@map("categories")
 }
+
+model Subcategory {
+  id String @id @default(cuid())
+  categoryId String @map("category_id")
+  name String @db.VarChar(150)
+  slug String @unique @db.VarChar(150)
+  isActive Boolean @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @db.Timestamptz() @map("created_at")
+  category Category @relation(fields: [categoryId],references: [id])
+
+  @@index([categoryId])
+  @@map("subcategories")
+}
+

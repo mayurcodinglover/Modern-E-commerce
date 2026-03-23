@@ -7,7 +7,6 @@ const createCategoryValidation=z.object({
     slug:z.string().min(1).max(150),
     description:z.string().optional(),
     imageUrl:z.string().optional(),
-    isActive:z.boolean()
 });
 
 export async function POST(req){
@@ -57,10 +56,13 @@ export async function GET(req){
                     name:{contains:search,mode:"insensitive"},
                 }),
             },
+            include:{
+                _count:{select:{subcategories:true}}
+            },
             orderBy:{createdAt:"desc"}
         });
 
-        return NextResponse.json({success:true,data:categories},{status:200});
+        return NextResponse.json({success:true,data:categories,total:categories.length},{status:200});
     } catch (error) {
         console.error(error);
         return NextResponse.json({success:false,message:"Internal server Error"},{status:500});
