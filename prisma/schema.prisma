@@ -69,3 +69,12 @@ model Subcategory {
   @@map("subcategories")
 }
 
+model Size {
+  id String @id @default(cuid())
+  name String @unique @db.VarChar(150)
+  createdAt DateTime @default(now()) @db.Timestamptz() @map("created_at")
+
+  @@map("sizes")
+}
+
+
