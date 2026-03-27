@@ -77,4 +77,13 @@ model Size {
   @@map("sizes")
 }
 
+model Color {
+  id String @id @default(cuid())
+  name String @unique @db.VarChar(50)
+  hexCode String? @map("hex_code") @db.VarChar(7)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@map("colors")
+}
+
 
