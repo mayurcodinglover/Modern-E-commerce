@@ -108,3 +108,73 @@ export async function PUT(req,{params})
         return NextResponse.json({error:'Failed to update product'},{status:500});
     }
 }
+export async function DELETE(req,{params})
+{
+    try {
+        const {id}=await params;
+        const existing=await prisma.product.findUnique({where:{id}});
+        if(!existing)
+        {
+            return NextResponse.json({error:'Product not found'},{status:404});
+        }
+        if(!existing.isActive)
+        {
+            return NextResponse.json({error:'product is already inactive'},{status:400});
+        }
+        await prisma.$transaction([
+            prisma.productVariant.updateMany({
+                where:{productId:id},
+                data:{isActive:false}
+            }),
+            prisma.product.update({
+                where:{id},
+                data:{
+                    isActive:false
+                },
+            }),
+        ]);
+        return NextResponse.json({message:'Product deleted successfully'},{status:200});
+    } catch (error) {
+        console.error('Error deleting product:',error);
+        return NextResponse.json({error:'Failed to delete product'},{status:500});
+    }
+}
+export async function PATCH(req,{params})
+{
+    try {
+        const {id}=await params;
+        const existing=await prisma.product.findUnique({where:{id}});
+        if(!existing)
+        {
+            return NextResponse.json({error:'Product not found'},{status:404});
+        }
+        if(existing.isActive)
+        {
+            return NextResponse.json({error:'Product is already active'},{status:400});
+        }
+        await prisma.$transaction([
+            prisma.productVariant.updateMany({
+                where:{productId:id},
+                data:{isActive:true}
+            }),
+            prisma.product.update({
+                where:{id},
+                data:{
+                    isActive:true
+                },
+            }),
+        ]);
+        const updated=await prisma.product.findUnique({
+            where:{id},
+            include:{
+                category:{select:{id:true,name:true}},
+                subcategory:{select:{id:true,name:true}},
+                _count:{select:{variants:true,images:true}},
+            },
+        });
+        return NextResponse.json({message:'Product restored successfully',product:updated},{status:200});
+    } catch (error) {
+        console.error("Internal server error:",error);
+        return NextResponse.json({error:'Failed to update product status'},{status:500});
+    }
+}
