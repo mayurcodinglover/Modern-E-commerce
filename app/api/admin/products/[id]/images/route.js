@@ -24,7 +24,7 @@ export async function POST(req,{params})
         if(!parsed.success)
         {
              console.log("Zod Error:", parsed.error.format());
-            return NextResponse.json({success:"false",errors:parsed.error.errors},{status:400});
+            return NextResponse.json({success:"false",errors: parsed.error.issues.map(e => e.message)},{status:400});
         }
         const {imageUrl,altText,isPrimary,displayOrder}=parsed.data;
         //check product is exist or not

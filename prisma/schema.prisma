@@ -145,4 +145,17 @@ model ProductImage {
   @@map("product_images")
 }
 
-
+model Coupon {
+  id String @id @default(cuid())
+  code String @unique @db.VarChar(50)
+  discountType String @map("discount_type") @db.VarChar(20) 
+  discountValue Decimal @map("discount_value") @db.Decimal(10,2)
+  minOrderAmount Decimal? @map("min_order_amount") @db.Decimal(10,2)
+  maxUses Int? @map("max_uses")
+  usedCount Int @default(0) @map("used_count")
+  isActive Boolean @default(true) @map("is_active")
+  expiresAt DateTime? @map("expires_at") @db.Timestamptz()
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  // orders Order[]
+  @@map("coupons")
+}

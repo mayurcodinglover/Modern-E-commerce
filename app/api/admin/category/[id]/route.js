@@ -44,7 +44,7 @@ export async function PUT(req,{params}){
         const parsed=updateCategorySchema.safeParse(body);
         if(!parsed.success)
         {
-            return NextResponse.json({success:false,errors:parsed.error.errors},{status:400});
+            return NextResponse.json({success:false,errors: parsed.error.issues.map(e => e.message)},{status:400});
         }
         const existing=await prisma.category.findUnique({
             where:{id}

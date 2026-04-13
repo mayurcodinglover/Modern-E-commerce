@@ -36,7 +36,7 @@ export async function PUT(req,{params})
         const parsed=updateColorValidation.safeParse(body);
         if(!parsed.success)
         {
-            return NextResponse.json({success:false,errors:parsed.error.errors},{status:400});
+            return NextResponse.json({success:false,errors: parsed.error.issues.map(e => e.message)},{status:400});
         }
         const exist=await prisma.color.findFirst({where:{id}});
         if(!exist)

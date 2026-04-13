@@ -17,7 +17,7 @@ export async function POST(req){
         const parsed=createColorValidation.safeParse(body);
         if(!parsed.success)
         {
-            return NextResponse.json({success:false,errors:parsed.error.errors},{status:400});
+            return NextResponse.json({success:false,errors: parsed.error.issues.map(e => e.message)},{status:400});
         }
          const existing = await prisma.color.findFirst({
       where: { name: parsed.data.name },

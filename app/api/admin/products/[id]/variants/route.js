@@ -18,7 +18,7 @@ export async function POST(req,{params})
         const parsed=validateVariantSchema.safeParse(body);
         if(!parsed.success)
         {
-            return NextResponse.json({status:"false",errors:parsed.error.errors},{status:400});
+            return NextResponse.json({status:"false",errors: parsed.error.issues.map(e => e.message)},{status:400});
         }
         const {sku,sizeId,colorId,stockQuantity,extraPrice}=parsed.data;
         const product=await prisma.product.findUnique({where:{id}});

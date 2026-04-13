@@ -16,7 +16,7 @@ export async function POST(req){
 
         if(!parsed.success)
         {
-            return NextResponse.json({success:false,errors:parsed.error.errors},{status:400})
+            return NextResponse.json({success:false,errors: parsed.error.issues.map(e => e.message)},{status:400})
         }
         const {name,slug,description,imageUrl}=parsed.data;
 
