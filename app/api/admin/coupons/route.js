@@ -1,5 +1,6 @@
 import prisma from "../../../../lib/prisma";
 import { NextResponse } from "next/server";
+import { use } from "react";
 import { z } from "zod";
 
 const couponSchema=z.object({
@@ -53,5 +54,32 @@ export async function POST(req,{params})
     } catch (error) {
         console.error("Error creating coupon:", error);
         return NextResponse.json({ error: "Failed to create coupon" }, { status: 500 });
+    }
+}
+export async function GET(req)
+{
+    try {
+        const now=new Date();
+        const {searchParams}=new URL(req.url);
+        const includeInactive=searchParams.get("includeInactive")==="true"
+        const discountType=searchParams.get("discountType") || "";
+
+        const coupons=await prisma.coupon.findMany({
+            where:{
+                ...(includeInactive ? {} : {isActive:true}),
+                ...(discountType ? {discountType} : {})
+            },
+            orderBy:{createdAt:"desc"}
+        });
+        const enriched=coupons.map((c)=>({
+            ...c,
+            isExpired:c.expiresAt ? c.expiresAt < now : false,
+            isMaxOut: c.maxUses ? c.usedCount >=c.maxUses : false,
+            remainingUses:c.maxUses ? c.maxUses - c.usedCount : null
+        }));
+        return NextResponse.json({success:true,data:enriched,total:enriched.length},{status:200});
+    } catch (error) {
+        console.error("Error fetching coupons:", error);
+        return NextResponse.json({ error: "Failed to fetch coupons" }, { status: 500 });
     }
 }
