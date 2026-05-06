@@ -37,6 +37,7 @@ model User {
   createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz()
   role            Role     @relation(fields: [roleId], references: [id])
+  addresses       Address[]
 
   @@index([email])
   @@index([roleId])
@@ -158,4 +159,22 @@ model Coupon {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
   // orders Order[]
   @@map("coupons")
+}
+
+model Address {
+  id String @id @default(cuid())
+  userId String @map("user_id")
+  addressLine1 String @map("address_line1") @db.VarChar(255)
+  addressLine2 String? @map("address_line2") @db.VarChar(255)
+  city String @db.VarChar(100)
+  state String @db.VarChar(100)
+  postalCode String @map("postal_code") @db.VarChar(20)
+  country String @db.VarChar(100)
+  isDefault Boolean @default(false) @map("is_default")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  user User @relation(fields: [userId],references: [id])
+  // orders Order[]
+
+  @@index([userId])
+  @@map("addresses")
 }
