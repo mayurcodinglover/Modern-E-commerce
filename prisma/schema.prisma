@@ -38,6 +38,7 @@ model User {
   updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz()
   role            Role     @relation(fields: [roleId], references: [id])
   addresses       Address[]
+  cartItems       Cart[]
 
   @@index([email])
   @@index([roleId])
@@ -126,6 +127,7 @@ model ProductVariant {
   product Product @relation(fields: [productId],references: [id])
   size Size? @relation(fields: [sizeId],references: [id])
   color Color? @relation(fields: [colorId],references: [id])
+  cartItems Cart[]
   
   @@unique([productId, sizeId, colorId])
   @@index([productId])
@@ -177,4 +179,20 @@ model Address {
 
   @@index([userId])
   @@map("addresses")
+}
+
+model Cart{
+  id String @id @default(cuid())
+  userId String @map("user_id")
+  productVariantId String @map("product_variant_id")
+  quantity Int @default(1)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user User @relation(fields: [userId],references: [id])
+  productVariant ProductVariant @relation(fields: [productVariantId],references: [id])
+
+  @@unique([userId, productVariantId])
+  @@index([userId])
+  @@map("cart")
 }
