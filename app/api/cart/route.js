@@ -166,3 +166,28 @@ export async function GET(req){
         return NextResponse.json({error:"Failed to fetch cart"},{status:500});
     }
 }
+export async function DELETE(req){
+    try {
+        const {searchParams}=new URL(req.url);
+        const userId=searchParams.get("userId");
+
+        if(!userId)
+        {
+            return NextResponse.json({error:"user Id is required"},{status:400});
+        }
+        const user=await prisma.user.findUnique({where:{id:userId}});
+        if(!user)
+        {
+            return NextResponse.json({error:"User not found"},{status:404});
+        }
+        const deleted=await prisma.cart.deleteMany({where:{userId}});
+        return NextResponse.json({
+            success:true,
+            message:"Cart cleared successfully",
+            data:deleted
+        });
+    } catch (error) {
+        console.error("Error deleting cart item:", error);
+        return NextResponse.json({error:"Failed to delete cart item"},{status:500});
+    }
+}
