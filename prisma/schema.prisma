@@ -39,6 +39,7 @@ model User {
   role            Role     @relation(fields: [roleId], references: [id])
   addresses       Address[]
   cartItems       Cart[]
+  whishlist       Whishlist[]
 
   @@index([email])
   @@index([roleId])
@@ -108,6 +109,7 @@ model Product {
   subcategory Subcategory? @relation(fields: [subcategoryId],references: [id])
   variants ProductVariant[]
   images ProductImage[]
+  whishlist Whishlist[]
 
   @@index([categoryId])
   @@index([subcategoryId])
@@ -195,4 +197,18 @@ model Cart{
   @@unique([userId, productVariantId])
   @@index([userId])
   @@map("cart")
+}
+
+model Whishlist {
+  id String @id @default(cuid())
+  userId String @map("user_id")
+  productId String @map("product_id")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  user User @relation (fields: [userId],references: [id])
+  product Product @relation (fields: [productId],references: [id])
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@map("whishlist")
 }
