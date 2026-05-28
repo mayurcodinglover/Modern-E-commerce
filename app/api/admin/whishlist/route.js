@@ -98,7 +98,7 @@ export async function GET(req)
                         }
                     }
                 }
-            }
+            }   
         },orderBy: { createdAt: "desc" }});
         //Enriched each item with usefull flags
         const enriched=whishlistItems.map((item)=>{
@@ -117,6 +117,24 @@ export async function GET(req)
         return NextResponse.json({success:true,data:enriched,total:enriched.length},{status:200});
     } catch (error) {
         console.error("Error fetching whishlist:", error);
+        return NextResponse.json({error:"Internal Server Error"},{status:500});
+    }
+}
+
+export async function DELETE(req)
+{
+    try {
+        const { searchParams } = new URL(req.url);
+        const userId = searchParams.get("userId");
+        const userExists=await prisma.user.findUnique({where:{id:userId}});
+        if(!userExists)
+        {
+            return NextResponse.json({error:"User not found"},{status:404});
+        }
+        const deleted=await prisma.whishlist.deleteMany({where:{userId}});
+        return NextResponse.json({success:true,message:"Whishlist cleared",deletedCount:deleted.count},{status:200});
+    } catch (error) {
+        console.error("Error removing from whishlist:", error);
         return NextResponse.json({error:"Internal Server Error"},{status:500});
     }
 }
