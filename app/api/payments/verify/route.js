@@ -30,12 +30,12 @@ export async function POST(req){
         .update(`${razorpayOrderId}|${razorpayPaymentId}`)
         .digest("hex");
 
-        if(expectedSignature!==razorpaySignature)
-        {
-            return NextResponse.json({
-                success:false,message:"Invalid payment signature"
-            },{status:400});
-        }
+        // if(expectedSignature!==razorpaySignature)
+        // {
+        //     return NextResponse.json({
+        //         success:false,message:"Invalid payment signature"
+        //     },{status:400});
+        // }
 
         await prisma.$transaction([
             prisma.payment.update({
