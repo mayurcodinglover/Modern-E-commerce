@@ -1,12 +1,11 @@
 "use client";
-import React from 'react'
+
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { DataTable } from "@/components/data-table/data-table";
-import  CategoryForm  from "@/components/forms/CategoryForm";
+import { CategoryForm } from "@/components/forms/category-form";
 import { getCategoryColumns } from "@/components/columns/category-columns";
 import { ConfirmDialog } from "@/components/data-table/confirm-dialog";
-import axios from "axios";
 import {
   Dialog,
   DialogContent,
@@ -17,83 +16,97 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
-const CategoriesPage = () => {
-
+export default function CategoriesPage() {
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Dialog states
+  // Dialog states
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-    // Selected category for edit/delete
+  // Selected category for edit/delete
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [confirmAction, setConfirmAction] = useState(null);
 
-   useEffect(() => {
+  // Fetch all categories on mount
+  useEffect(() => {
     fetchCategories();
   }, []);
 
   async function fetchCategories() {
     try {
       setIsLoading(true);
-      const res=await axios.get("/api/admin/category?includeInactive=true");
-      if(res.data.success){
-        setCategories(res.data.data);
-      }else{
+      const res = await fetch("/api/admin/categories?includeInactive=true");
+      const data = await res.json();
+      if (data.success) {
+        setCategories(data.data);
+      } else {
         toast.error("Failed to load categories");
       }
     } catch (error) {
-      toast.error("Failed to load categories");
+      toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
     }
   }
-async function handleCreate(formData){
-  try {
-    setIsSubmitting(true);
-    const res=await axios.post("/api/admin/category",formData);
-    if(res.data.success){
-      toast.success("Category created successfully");
-      setCreateOpen(false);
-      fetchCategories();
+
+  // Create category
+  async function handleCreate(formData) {
+    try {
+      setIsSubmitting(true);
+      const res = await fetch("/api/admin/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Category created successfully");
+        setCreateOpen(false);
+        fetchCategories();
+      } else {
+        toast.error(data.message || "Failed to create category");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setIsSubmitting(false);
     }
-    else{
-      toast.error(res.data.message || "Failed to create category");
+  }
+
+  // Edit category
+  function handleEdit(category) {
+    setSelectedCategory(category);
+    setEditOpen(true);
+  }
+
+  async function handleUpdate(formData) {
+    try {
+      setIsSubmitting(true);
+      const res = await fetch(`/api/admin/categories/${selectedCategory.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Category updated successfully");
+        setEditOpen(false);
+        setSelectedCategory(null);
+        fetchCategories();
+      } else {
+        toast.error(data.message || "Failed to update category");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setIsSubmitting(false);
     }
-  } catch (error) {
-    console.error(error);
-    toast.error("Failed to create category");
   }
-  finally{
-    setIsSubmitting(false);
-  }
-}
-function handleEdit(category){
-  setSelectedCategory(category);
-  setEditOpen(true);
-}
-async function handleUpdate(formData){
-  try {
-    setIsSubmitting(true);
-    const res=await axios.put(`/api/admin/category/${selectedCategory.id}`,formData);
-    if(res.data.success){
-      toast.success("Category updated successfully");
-      setEditOpen(false);
-      fetchCategories();
-    }
-    else{
-      toast.error(res.data.message || "Failed to update category");
-    }
-  } catch (error) {
-    toast.error("Failed to update category");
-  }
-  finally{
-    setIsSubmitting(false);
-  }
-}
+
+  // Deactivate category
   function handleDeactivate(category) {
     setSelectedCategory(category);
     setConfirmAction("deactivate");
@@ -110,39 +123,43 @@ async function handleUpdate(formData){
   async function handleConfirm() {
     try {
       setIsSubmitting(true);
-      const method=confirmAction==="deactivate"?"DELETE":"PATCH";
-      const res=await fetch(`/api/admin/category/${selectedCategory.id}`,{
-        method:method,
-        headers:{"Content-Type":"application/json"},
-      });
-      const data=await res.json();
-      if(data.success)
-      {
-        toast.success(confirmAction==="deactivate"?"Category deactivated successfully":"Category reactivated successfully");
+      const method = confirmAction === "deactivate" ? "DELETE" : "PATCH";
+      const res = await fetch(
+        `/api/admin/categories/${selectedCategory.id}`,
+        { method }
+      );
+      const data = await res.json();
+      if (data.success) {
+        toast.success(
+          confirmAction === "deactivate"
+            ? "Category deactivated"
+            : "Category reactivated"
+        );
         setConfirmOpen(false);
         setSelectedCategory(null);
         fetchCategories();
-      }
-      else{
-        toast.error(data.message || "Failed to perform action");
+      } else {
+        toast.error(data.message || "Action failed");
       }
     } catch (error) {
-      toast.error("Something went wrong"); 
-    }
-    finally {
+      toast.error("Something went wrong");
+    } finally {
       setIsSubmitting(false);
     }
   }
+
   const columns = getCategoryColumns({
     onEdit: handleEdit,
     onDeactivate: handleDeactivate,
     onReactivate: handleReactivate,
   });
 
-    const activeCount = categories.filter((c) => c.isActive).length;
+  // Stats
+  const activeCount = categories.filter((c) => c.isActive).length;
   const inactiveCount = categories.filter((c) => !c.isActive).length;
+
   return (
-   <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6">
 
       {/* Page header */}
       <div className="flex items-center justify-between">
@@ -157,7 +174,9 @@ async function handleUpdate(formData){
           Add category
         </Button>
       </div>
-       <div className="grid grid-cols-3 gap-4">
+
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-4">
         <div className="bg-secondary rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Total</p>
           <p className="text-2xl font-semibold">{categories.length}</p>
@@ -173,7 +192,8 @@ async function handleUpdate(formData){
       </div>
 
       <Separator />
-       {/* DataTable */}
+
+      {/* DataTable */}
       <DataTable
         columns={columns}
         data={categories}
@@ -182,19 +202,21 @@ async function handleUpdate(formData){
         isLoading={isLoading}
       />
 
-       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-              <DialogContent className="max-w-lg">
-                <DialogHeader>
-                  <DialogTitle>Create category</DialogTitle>
-                </DialogHeader>
-                <CategoryForm
-                  onSubmit={handleCreate}
-                  isLoading={isSubmitting}
-                />
-              </DialogContent>
-            </Dialog>
+      {/* Create Dialog */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Create category</DialogTitle>
+          </DialogHeader>
+          <CategoryForm
+            onSubmit={handleCreate}
+            isLoading={isSubmitting}
+          />
+        </DialogContent>
+      </Dialog>
 
-             <Dialog open={editOpen} onOpenChange={setEditOpen}>
+      {/* Edit Dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit category</DialogTitle>
@@ -214,7 +236,8 @@ async function handleUpdate(formData){
         </DialogContent>
       </Dialog>
 
- <ConfirmDialog
+      {/* Confirm Dialog */}
+      <ConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
         title={
@@ -234,10 +257,6 @@ async function handleUpdate(formData){
         loading={isSubmitting}
         destructive={confirmAction === "deactivate"}
       />
-
-      </div>
-
-  )
+    </div>
+  );
 }
-
-export default CategoriesPage
