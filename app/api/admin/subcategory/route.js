@@ -60,10 +60,15 @@ export async function GET(req)
 {
     try {
         const {searchParams}=new URL(req.url);
+        console.log(searchParams);
+        
     const categoryId=searchParams.get("categoryId");
     const includeInactive=searchParams.get("includeInactive")==="true";
     const search=searchParams.get("search") || "";
-
+    console.log("hii");
+    
+        console.log(categoryId);
+        
     if(!categoryId)
     {
         return NextResponse.json({success:false,message:"Category Id Query param is required"},{status:400});
