@@ -41,11 +41,10 @@ export default function ProductsPage() {
       const {data}=await axios.get("/api/admin/products?includeInactive=true");
       if(data.products)
       {
+        console.log(data);
         setProducts(data.products);
       }
        else {
-        console.log(data);
-        
         toast.error("Failed to load products");
       }
     } catch (error) {
@@ -59,7 +58,8 @@ export default function ProductsPage() {
   async function handleCreate(formData){
     try {
       setIsSubmitting(true);
-      const {data}=await axios.post("/api/admin/products",{
+      console.log(formData);
+      const res=await axios.post("/api/admin/products",{
         ...formData,
         basePrice: Number(formData.basePrice),
           discountPrice: formData.discountPrice
@@ -67,13 +67,14 @@ export default function ProductsPage() {
             : null,
             subcategoryId: formData.subcategoryId || null
       });
-      if(data.success)
+      
+      if(res.status===201)
       {
         toast.success("Product created successfully");
         setCreateOpen(false);
         fetchProducts();
       }else {
-        toast.error(data.message || "Failed to create product");
+        toast.error(res.data.message || "Failed to create product");
       }
     } catch (error) {
        toast.error("Something went wrong");
@@ -90,11 +91,11 @@ export default function ProductsPage() {
     setManageOpen(true);
   }
 
-  async function handleUpdate(fromData)
+  async function handleUpdate(formData)
   {
     try {
        setIsSubmitting(true);
-       const {data}=await axios.put(`/api/admin/products/${selectedProduct.id}`,{
+       const res=await axios.put(`/api/admin/products/${selectedProduct.id}`,{
         ...formData,
          basePrice: Number(formData.basePrice),
             discountPrice: formData.discountPrice
@@ -102,16 +103,17 @@ export default function ProductsPage() {
               : null,
             subcategoryId: formData.subcategoryId || null,
        });
-       if(data.success)
+       if(res.status===200)
        {
         toast.success("Product updated successfully");
         setEditOpen(false);
         setSelectedProduct(null);
         fetchProducts();
        }else {
-        toast.error(data.message || "Failed to update product");
+        toast.error(res.data.message || "Failed to update product");
       }
     } catch (error) {
+      console.log(error);
        toast.error("Something went wrong");
     } finally {
       setIsSubmitting(false);

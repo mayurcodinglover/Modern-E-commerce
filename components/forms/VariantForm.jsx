@@ -44,8 +44,8 @@ export function VariantForm({ onSubmit, isLoading }) {
   async function  fetchSizeAndColors(){
     try {
          const [sizesRes, colorsRes] = await Promise.all([
-        fetch("/api/admin/sizes"),
-        fetch("/api/admin/colors"),
+        fetch("/api/admin/size"),
+        fetch("/api/admin/color"),
       ]);
       const sizesData = await sizesRes.json();
       const colorsData = await colorsRes.json();

@@ -11,7 +11,7 @@ const createProductValidation=z.object({
     categoryId:z.string().min(1,"Category is required"),
     subcategoryId:z.string().optional().nullable(),
     basePrice:z.number().positive("Base price must be a positive number"),
-    discountedPrice:z.number().positive("Discounted price must be a positive number").optional().nullable(),
+    discountPrice:z.number().positive("Discounted price must be a positive number").optional().nullable(),
 });
 
 export async function POST(req){
@@ -21,7 +21,8 @@ export async function POST(req){
         if(!parsedData.success){
             return NextResponse.json({error:"Invalid input",errors:parsedData.error.errors},{status:400});
         }
-        const {name,title,description,categoryId,subcategoryId,basePrice,discountedPrice}=parsedData.data;
+        const {name,title,description,categoryId,subcategoryId,basePrice,discountPrice}=parsedData.data;
+        console.log(name,title,description,categoryId,subcategoryId,basePrice,discountPrice);
         const category=await prisma.category.findUnique({where:{id:categoryId}});
         if(!category)
         {
@@ -50,7 +51,7 @@ export async function POST(req){
                 title:title ?? null,
                 description:description ?? null,
                 basePrice,
-                discountPrice:discountedPrice ?? null,
+                discountPrice:discountPrice ?? null,
                 categoryId,
                 subcategoryId:subcategoryId ?? null,
             },

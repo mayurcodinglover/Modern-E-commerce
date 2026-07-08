@@ -33,7 +33,7 @@ export function ManageProductDialog({ open, onOpenChange, product }) {
   async function fetchVariants(){
     try {
         const res=await axios.get(`/api/admin/products/${product.id}/variants?includeInactive=true`);
-        if(res.data.success)
+        if(res.status===200)
         {
             setVariants(res.data.data);
         }
@@ -55,20 +55,20 @@ export function ManageProductDialog({ open, onOpenChange, product }) {
   async function handleAddVariant(formData){
     try {
           setIsSubmitting(true);
-          const {data}=await axios.post(`/api/admin/products/${product.id}/variants`,{
+          const res=await axios.post(`/api/admin/products/${product.id}/variants`,{
             ...formData,
             stockQuantity:Number(formData.stockQuantity),
             extraPrice:Number(formData.extraPrice),
             sizeId:formData.sizeId || null,
             colorId:formData.colorId || null
           });
-          if(data.success)
+          if(res.status===201)
           {
             toast.success("Variant added successfully");
             fetchVariants();
           }
           else{
-             toast.error(data.message || "Failed to add variant");
+             toast.error(res.data.message || "Failed to add variant");
           }
     } catch (error) {
         toast.error("Something went wrong");
@@ -76,18 +76,19 @@ export function ManageProductDialog({ open, onOpenChange, product }) {
       setIsSubmitting(false);
     }
   }
-  async function deleteVariant(variantId)
+  async function handleDeleteVariant(variantId)
   {
     try {
-        const {data}=await axios.Delete(`/api/admin/products/${product.id}/variants/${variantId}`);
-        if(data.success)
+        const res=await axios.delete(`/api/admin/products/${product.id}/variants/${variantId}`);
+        if(res.status===200)
         {
              toast.success("Variant deleted");
         fetchVariants();
         }else {
-        toast.error(data.message || "Failed to delete variant");
+        toast.error(res.data.message || "Failed to delete variant");
       }
     } catch (error) {
+      console.log(error);
          toast.error("Something went wrong");
     }
   }
@@ -95,16 +96,19 @@ export function ManageProductDialog({ open, onOpenChange, product }) {
   {
     try {
         setIsSubmitting(true);
-        const {data}=await axios.post(`/api/admin/products/${product.id}/images`,{
-            ...formData,
-            displayOrder:Number(formData.displayOrder),
-        });
-        if(data.success)
+        const uploadData = new FormData();
+
+uploadData.append("file", formData.file);
+    uploadData.append("altText", formData.altText);
+    uploadData.append("displayOrder", Number(formData.displayOrder));
+    uploadData.append("isPrimary", String(formData.isPrimary));
+          const res=await axios.post(`/api/admin/products/${product.id}/images`,uploadData);
+        if(res.status===201)
         {
              toast.success("Image added successfully");
         fetchImages();
         } else {
-        toast.error(data.message || "Failed to add image");
+        toast.error(res.data.message || "Failed to add image");
       }
     } catch (error) {
          toast.error("Something went wrong");
