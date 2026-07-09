@@ -38,7 +38,7 @@ export async function GET(req)
 {
     try {
         const sizes=await prisma.size.findMany({});
-        return NextResponse.json({success:true,data:sizes});
+        return NextResponse.json({success:true,data:sizes},{status:200});
     } catch (error) {
         console.error(error);
         return NextResponse.json({success:false,message:"Internal server Error"},{status:500})

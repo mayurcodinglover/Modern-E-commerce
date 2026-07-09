@@ -98,7 +98,15 @@ export function ManageProductDialog({ open, onOpenChange, product }) {
         setIsSubmitting(true);
         const uploadData = new FormData();
 
-uploadData.append("file", formData.file);
+ // Upload tab
+    if (formData.file) {
+      uploadData.append("file", formData.file);
+    }
+
+    // URL tab
+    if (formData.imageUrl) {
+      uploadData.append("imageUrl", formData.imageUrl);
+    }
     uploadData.append("altText", formData.altText);
     uploadData.append("displayOrder", Number(formData.displayOrder));
     uploadData.append("isPrimary", String(formData.isPrimary));
@@ -119,13 +127,13 @@ uploadData.append("file", formData.file);
   async function handleSetPrimary(imageId)
   {
     try {
-        const {data}=await axios.patch(`/api/admin/products/${product.id}/images/${imageId}/primary`);
-        if(data.success)
+        const res=await axios.patch(`/api/admin/products/${product.id}/images/${imageId}/primary`);
+        if(res.status===200)
         {
              toast.success("Primary image updated");
         fetchImages();
         } else {
-        toast.error(data.message || "Failed to update primary image");
+        toast.error(res.data.message || "Failed to update primary image");
       }
 
     } catch (error) {
@@ -135,13 +143,13 @@ uploadData.append("file", formData.file);
   async function handleDeleteImage(imageId)
   {
     try {
-        const {data}=await axios.delete(`/api/admin/products/${product.id}/images/${imageId}`);
-        if(data.success)
+        const res=await axios.delete(`/api/admin/products/${product.id}/images/${imageId}`);
+        if(res.status===200)
         {
              toast.success("Image deleted");
         fetchImages();
         }else {
-        toast.error(data.message || "Failed to delete image");
+        toast.error(res.data.message || "Failed to delete image");
       }
     } catch (error) {
          toast.error("Something went wrong");
