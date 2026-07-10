@@ -32,6 +32,7 @@ export async function PUT(req,{params})
 {
     try {
         const {id}=await params;
+        console.log(id);
         const body=await req.json();
         const parsed=updateColorValidation.safeParse(body);
         if(!parsed.success)

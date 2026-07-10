@@ -32,7 +32,7 @@ export async function POST(req){
                 hexCode:parsed.data.hexCode ?? null
             }
         });
-        return NextResponse.json({success:true,message:"Color Added Successfully"},{status:200});
+        return NextResponse.json({success:true,message:"Color Added Successfully"},{status:201});
     } catch (error) {
         console.error(error);
         return NextResponse.json({success:false,message:"Internal server Error"},{status:500});
