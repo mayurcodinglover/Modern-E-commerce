@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../lib/prisma";
-import {includes, success, z} from "zod"
+import {z} from "zod"
 
 const validateSubCategory=z.object({
     name:z.string().min(1).max(150),
@@ -56,52 +56,77 @@ export async function POST(req)
     }
 }
 
-export async function GET(req)
-{
-    try {
-        const {searchParams}=new URL(req.url);
-        console.log(searchParams);
-        
-    const categoryId=searchParams.get("categoryId");
-    const includeInactive=searchParams.get("includeInactive")==="true";
-    const search=searchParams.get("search") || "";
-    console.log("hii");
+export async function GET(req) {
+  try {
     
-        console.log(categoryId);
-        
-    if(!categoryId)
-    {
-        return NextResponse.json({success:false,message:"Category Id Query param is required"},{status:400});
-    }
-    const category=await prisma.category.findUnique({
-        where:{
-            id:categoryId
-        }
-    });
-    if(!category)
-    {
-        return NextResponse.json({success:false,message:"Category Not Found"},{status:404});
-    }
-    const subcategories=await prisma.subcategory.findMany({
-        where:{
-            categoryId,
-            ...(includeInactive ? {} : {isActive:true}),
-            ...(search && {
-                name:{contains:search,mode:"insensitive"},
-            }),
+    const { searchParams } = new URL(req.url);
+    const categoryId = searchParams.get("categoryId");
+    console.log(categoryId);
+    
+    const includeInactive = searchParams.get("includeInactive") === "true";
+    const search = searchParams.get("search") || "";
+
+    // If no categoryId → return ALL subcategories (for admin page)
+    if (!categoryId) {
+      const subcategories = await prisma.subcategory.findMany({
+        where: {
+          ...(includeInactive ? {} : { isActive: true }),
+          ...(search && {
+            name: { contains: search, mode: "insensitive" },
+          }),
         },
-        include:{
-            category:{select :{id:true,name:true}}
+        include: {
+          category: { select: { id: true, name: true } },
         },
-        orderBy:{createdAt:"desc"}
+        orderBy: { createdAt: "desc" },
+      });
+
+      return NextResponse.json(
+        { success: true, data: subcategories, total: subcategories.length },
+        { status: 200 }
+      );
+    }
+
+    // If categoryId provided → return subcategories for that category
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId },
     });
 
-    return NextResponse.json({success:true,data:subcategories,total:subcategories.length,category:{id:category.id,name:category.name}},{status:200});
-    
-    } catch (error) {
-        console.error(error);
-        return NextResponse.json({success:false,message:"Internal server Error"},{status:500});
+    if (!category) {
+      return NextResponse.json(
+        { success: false, message: "Category not found" },
+        { status: 404 }
+      );
     }
 
+    const subcategories = await prisma.subcategory.findMany({
+      where: {
+        categoryId,
+        ...(includeInactive ? {} : { isActive: true }),
+        ...(search && {
+          name: { contains: search, mode: "insensitive" },
+        }),
+      },
+      include: {
+        category: { select: { id: true, name: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
 
+    return NextResponse.json(
+      {
+        success: true,
+        data: subcategories,
+        total: subcategories.length,
+        category: { id: category.id, name: category.name },
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

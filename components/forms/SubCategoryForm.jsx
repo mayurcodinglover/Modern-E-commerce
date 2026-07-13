@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createSubcategorySchema } from "@/lib/validations/subcategory.schema";
 import { generateSlug } from "@/lib/utils/slug";
 import axios from "axios";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import {
   Form,
   FormControl,
@@ -56,7 +56,7 @@ export function SubcategoryForm({
 
   async function fetchCategories(){
     try {
-        const res=await axios.get("/api/category?includeInactive=true");
+        const res=await axios.get("/api/admin/category?includeInactive=true");
         if(res.status===200)
         {
             setCategories(res.data.data);

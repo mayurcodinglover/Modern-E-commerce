@@ -1,6 +1,6 @@
 import prisma from "../../../../../lib/prisma";
 import { NextResponse } from "next/server";
-import {includes, z} from "zod"
+import {z} from "zod"
 
 const updateValidation=z.object({
     name:z.string().min(1).max(150).optional(),
@@ -76,4 +76,138 @@ export async function PUT(req,{params})
         console.error(error);
         return NextResponse.json({success:false,message:"Internal server Error"},{status:500});
     }
+}
+// GET /api/admin/subcategories/[id] — Get single subcategory
+export async function GET(req, { params }) {
+  try {
+    const { id } = await params;
+    console.log(id);
+    
+
+    const subcategory = await prisma.subcategory.findUnique({
+      where: { id },
+      include: {
+        category: { select: { id: true, name: true } },
+      },
+    });
+
+    if (!subcategory) {
+      return NextResponse.json(
+        { success: false, message: "Subcategory not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { success: true, data: subcategory },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE /api/admin/subcategories/[id] — Soft delete
+export async function DELETE(req, { params }) {
+  try {
+    const { id } = await params;
+
+    const existing = await prisma.subcategory.findUnique({ where: { id } });
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, message: "Subcategory not found" },
+        { status: 404 }
+      );
+    }
+
+    if (!existing.isActive) {
+      return NextResponse.json(
+        { success: false, message: "Subcategory is already deactivated" },
+        { status: 400 }
+      );
+    }
+
+    const updated = await prisma.subcategory.update({
+      where: { id },
+      data: { isActive: false },
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Subcategory deactivated successfully",
+        data: updated,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+// PATCH /api/admin/subcategories/[id] — Reactivate
+export async function PATCH(req, { params }) {
+  try {
+    const { id } = await params;
+
+    const existing = await prisma.subcategory.findUnique({ where: { id } });
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, message: "Subcategory not found" },
+        { status: 404 }
+      );
+    }
+
+    if (existing.isActive) {
+      return NextResponse.json(
+        { success: false, message: "Subcategory is already active" },
+        { status: 400 }
+      );
+    }
+
+    // Check parent category is still active before reactivating
+    const parentCategory = await prisma.category.findUnique({
+      where: { id: existing.categoryId },
+    });
+
+    if (!parentCategory.isActive) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Cannot reactivate — parent category is inactive. Reactivate the category first.",
+        },
+        { status: 400 }
+      );
+    }
+
+    const updated = await prisma.subcategory.update({
+      where: { id },
+      data: { isActive: true },
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Subcategory reactivated successfully",
+        data: updated,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }
