@@ -34,7 +34,7 @@ export async function PATCH(req,{params})
                 validStatuses
             },{status:400});
         }
-        const existing=await prisma.orders.findUnique({
+        const existing=await prisma.order.findUnique({
             where:{id}
         });
         if(!existing)
