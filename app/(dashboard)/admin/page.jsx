@@ -121,7 +121,7 @@ export default function AdminDashboard() {
             { label: "Add product", href: "/admin/products", icon: Package },
             { label: "Add category", href: "/admin/categories", icon: Tag },
             { label: "View orders", href: "/admin/orders", icon: ShoppingCart },
-            { label: "Manage coupons", href: "/admin/coupons", icon: TrendingUp },
+            { label: "Manage coupons", href: "/admin/coupon", icon: TrendingUp },
           ].map((action) => {
             const Icon = action.icon;
             return (

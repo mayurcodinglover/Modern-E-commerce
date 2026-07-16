@@ -69,7 +69,7 @@ export const adminNavItems = [
       },
       {
         label: "Coupons",
-        href: "/admin/coupons",
+        href: "/admin/coupon",
         icon: Ticket,
       },
     ],
