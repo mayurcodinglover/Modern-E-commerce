@@ -19,7 +19,7 @@ const wishlistSlice=createSlice({
         },
 
         removeFromWishlistLocally:(state,action)=>{
-            state.itesm=state.items.filter((item)=>item.id!==action.payload);
+            state.items=state.items.filter((item)=>item.id!==action.payload);
             state.count-=1;
         },
     },
