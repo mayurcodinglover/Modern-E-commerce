@@ -103,7 +103,7 @@ export async function GET(req){
         { status: 400 }
       );
     }
-    const [reviews,allRatings]=await promise.all([
+    const [reviews,allRatings]=await Promise.all([
         prisma.review.findMany({
             where:{productId},
             include:{
