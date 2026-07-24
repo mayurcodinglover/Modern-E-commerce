@@ -12,7 +12,7 @@ const cartSlice=createSlice({
     initialState,
     reducers:{
         setCart:(state,action)=>{
-            state.items=action.payload.items;
+            state.items=action.payload.data;
             state.itemCount=action.payload.summary.itemCount;
             state.cartTotal=action.payload.summary.cartTotal;
         },

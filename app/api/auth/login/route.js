@@ -57,7 +57,18 @@ export async function POST(request){
         const accessToken=signAccessToken(tokenPayload);
         const refreshToken=signRefreshToken({id:existingUser.id});
 
-        const response=NextResponse.json({success:true,accessToken},{status:200});
+        const response = NextResponse.json({
+    success: true,
+    accessToken,
+    user: {
+        id: existingUser.id,
+        firstName: existingUser.firstName,
+        lastName: existingUser.lastName,
+        email: existingUser.email,
+        role: existingUser.role,
+        profileImageUrl: existingUser.profileImageUrl
+    }
+});
         response.cookies.set("refreshToken",refreshToken,refreshCookieOptions);
         return response;
     } catch (error) {
