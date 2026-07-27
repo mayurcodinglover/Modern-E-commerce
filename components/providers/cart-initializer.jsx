@@ -8,12 +8,15 @@ import { setWishlist } from "../../app/store/slices/wishlistSlice.js";
 export function CartInitializer() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+   const authLoading = useSelector((state) => state.auth.loading);
 
-  useEffect(() => {
-    if (user) {
+ useEffect(() => {
+    // Wait until auth is done loading
+    // Then load cart + wishlist if user exists
+    if (!authLoading && user) {
       initializeCartAndWishlist();
     }
-  }, [user]);
+  }, [user, authLoading]);
 
     async function initializeCartAndWishlist() {
     try {

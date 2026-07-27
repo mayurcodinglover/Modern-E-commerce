@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import ReduxProvider from "../components/providers/redux-provider";
 import { CartInitializer } from "../components/providers/cart-initializer";
+import {AuthInitializer} from "../components/providers/auth-initializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ReduxProvider>
+          <AuthInitializer/>
            <CartInitializer />
            {children}
            <Toaster richColors position="top-right" />

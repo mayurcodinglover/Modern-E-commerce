@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setCart, removeItemLocally, clearCart } from "../../store/slices/cartSlice.js";
+import { setCart, removeItemLocally, clearCart ,updateItemQuantity} from "../../store/slices/cartSlice.js";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -204,19 +204,27 @@ export default function CartPage() {
     async function handleQuantityChange(cartItemId, newQuantity) {
     try {
       setUpdatingItems((prev) => new Set(prev).add(cartItemId));
+      dispatch(
+    updateItemQuantity({
+        cartItemId,
+        quantity:newQuantity
+    })
+);
       const res = await fetch(`/api/cart/${cartItemId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ quantity: newQuantity }),
       });
       const data = await res.json();
-      if (data.success) {
-        fetchCart();
-      } else {
-        toast.error(data.message || "Failed to update quantity");
-      }
-    } catch {
+       if (!data.success) {
+      // ❌ If API fails → revert Redux back by re-fetching
+      toast.error(data.message || "Failed to update quantity");
+      fetchCart(); // only revert on error
+    }
+    } catch(error) {
+       console.error(error);
       toast.error("Something went wrong");
+       fetchCart(); // only revert on error
     } finally {
       setUpdatingItems((prev) => {
         const next = new Set(prev);

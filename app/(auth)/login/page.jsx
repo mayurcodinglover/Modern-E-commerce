@@ -54,6 +54,7 @@ export default function LoginPage() {
 
         // Store token in localStorage
         localStorage.setItem("token", data.accessToken);
+         localStorage.setItem("user", JSON.stringify(data.user));
 
         // Redirect based on role
         if (data.user.role === "admin") {

@@ -7,6 +7,13 @@ const initialState={
     loading:false,
 }
 
+function recalculateCart(state){
+    state.itemCount=state.items.reduce((total,item)=>total+item.quantity,0);
+    state.cartTotal=state.items.reduce((total,item)=>total+item.totalPrice,0);
+}
+
+
+
 const cartSlice=createSlice({
     name:"cart",
     initialState,
@@ -22,14 +29,34 @@ const cartSlice=createSlice({
             if(existing)
             {
                 existing.quantity+=action.payload.quantity;
+                existing.totalPrice = existing.quantity * Number(existing.unitPrice);
             }
             else{
                 state.items.push(action.payload);
             }
+             recalculateCart(state);
         },
-        removeItemLocally:(state,action)=>{
-            state.items=state.items.filter((item)=>item.productVariantId!==action.payload.productVariantId);
-        },
+         updateItemQuantity: (state, action) => {
+      const { cartItemId, quantity } = action.payload;
+
+      const item = state.items.find(
+        (item) => item.id === cartItemId
+      );
+
+      if (!item) return;
+
+      item.quantity = quantity;
+      item.totalPrice = quantity * Number(item.unitPrice);
+
+      recalculateCart(state);
+    },
+       removeItemLocally: (state, action) => {
+      state.items = state.items.filter(
+        (item) => item.id !== action.payload
+      );
+
+      recalculateCart(state);
+    },
         clearCart:(state)=>{
             state.items=[];
             state.itemCount=0;
@@ -45,6 +72,7 @@ export const {
   setCart,
   addItemLocally,
   removeItemLocally,
+  updateItemQuantity,
   clearCart,
   setLoading,
 } = cartSlice.actions;
