@@ -46,7 +46,7 @@ export function ProductCard({ product, userId }) {
     {
         const item=wishlistItems.find((i)=>i.productId===product.id);
         try {
-            const res=await axios.delete(`/api/whishlist/${item.id}`);
+            const res=await axios.delete(`/api/wishlist/${item.id}`);
             if(res.status===200)
             {
               dispatch(removeFromWishlistLocally(item.id));
@@ -58,7 +58,7 @@ export function ProductCard({ product, userId }) {
     }
     else{
       try {
-        const res=await axios.post("/api/whishlist",{userId,productId:product.id});
+        const res=await axios.post("/api/wishlist",{userId,productId:product.id});
         if(res.status===201)
         {
           dispatch(addToWishlistLocally({id:res.data.data.id,productId:product.id}));

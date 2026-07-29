@@ -28,7 +28,7 @@ export function CartInitializer() {
       }
 
       // Load wishlist
-      const wishlistRes = await fetch(`/api/whishlist?userId=${user.id}`);
+      const wishlistRes = await fetch(`/api/wishlist?userId=${user.id}`);
       const wishlistData = await wishlistRes.json();
       if (wishlistData.success) {
         dispatch(
@@ -41,7 +41,7 @@ export function CartInitializer() {
         );
       }
     } catch (error) {
-      console.error("Failed to initialize cart/wishlist", error);
+      console.error("Failed to initialize cart", error);
     }
   }
 
