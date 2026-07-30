@@ -47,17 +47,21 @@ export default function LoginPage() {
       console.log(data);
       
       if (data.success) {
-        
-        
-        dispatch(setUser(data.user));
-        toast.success(`Welcome back, ${data.user.firstName}!`);
+         // ✅ Save to localStorage (for client-side use)
+      localStorage.setItem("token", data.data.token);
+      localStorage.setItem("user", JSON.stringify(data.data.user));
 
-        // Store token in localStorage
-        localStorage.setItem("token", data.accessToken);
-         localStorage.setItem("user", JSON.stringify(data.user));
+      // ✅ Save to cookie (for middleware/server-side use)
+      document.cookie = `token=${data.data.token}; path=/; max-age=${
+        7 * 24 * 60 * 60
+      }; SameSite=Lax`;
+        console.log(data.data.user);
+        
+        dispatch(setUser(data.data.user));
+        toast.success(`Welcome back, ${data.data.user.firstName}!`);
 
         // Redirect based on role
-        if (data.user.role === "admin") {
+        if (data.data.user.role === "admin") {
           router.push("/admin");
         } else {
           router.push("/");
@@ -65,7 +69,8 @@ export default function LoginPage() {
       } else {
         toast.error(data.message || "Login failed");
       }
-    } catch {
+    } catch(error) {
+      console.log(error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);

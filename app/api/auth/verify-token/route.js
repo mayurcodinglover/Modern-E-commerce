@@ -1,67 +1,43 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { verifyAccessToken } from "@/lib/jwt";
+import { authenticate } from "@/lib/auth";
+import prisma from "../../../../lib/prisma";
 
-export async function GET(request) {
-    try {
-        const authHeader = request.headers.get("authorization");
+// GET /api/auth/verify-token
+export async function GET(req) {
+  try {
+    const auth = await authenticate(req);
 
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    message: "Token missing",
-                },
-                { status: 401 }
-            );
-        }
-
-        const token = authHeader.split(" ")[1];
-
-        // Verify JWT
-        const payload = verifyAccessToken(token);
-
-        // Check database
-        const user = await prisma.user.findUnique({
-            where: {
-                id: payload.id,
-            },
-            select: {
-                id: true,
-                isActive: true,
-            },
-        });
-
-        if (!user) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    message: "User not found",
-                },
-                { status: 401 }
-            );
-        }
-
-        if (!user.isActive) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    message: "Account deactivated",
-                },
-                { status: 403 }
-            );
-        }
-
-        return NextResponse.json({
-            success: true,
-        });
-    } catch (error) {
-        return NextResponse.json(
-            {
-                success: false,
-                message: "Invalid or expired token",
-            },
-            { status: 401 }
-        );
+    if (!auth.success) {
+      return NextResponse.json(
+        { success: false, message: auth.message },
+        { status: auth.status }
+      );
     }
+
+    // Fetch fresh user from DB to make sure they still exist and are active
+    const user = await prisma.user.findUnique({
+      where: { id: auth.user.id },
+      include: { role: { select: { name: true } } },
+    });
+
+    if (!user || !user.isActive) {
+      return NextResponse.json(
+        { success: false, message: "User not found or deactivated" },
+        { status: 401 }
+      );
+    }
+
+    const { passwordHash, emailVerificationToken, ...safeUser } = user;
+
+    return NextResponse.json(
+      { success: true, data: { user: safeUser } },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Verify token error:", error);
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

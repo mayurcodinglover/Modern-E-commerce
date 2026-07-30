@@ -1,78 +1,88 @@
-import {NextResponse} from "next/server";
 import prisma from "../../../../lib/prisma";
+import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { signAccessToken, signRefreshToken, refreshCookieOptions } from "../../../../lib/jwt";
+import { generateToken } from "@/lib/auth";
 
-export async function POST(request){
-    try {
-        const body=await request.json();
-        const {email,password}=body
+export async function POST(req) {
+  try {
+    const body = await req.json();
+    const { email, password } = body;
 
-        //Input Validation
-        if(!email || !password)
-        {
-            return NextResponse.json({success:false,message:"Email and password are required"},{status:400});
-        }
-        if(typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-        {
-            return NextResponse.json({success:false,message:"Invalid email format"},{status:400});
-        }
-
-        const existingUser=await prisma.user.findUnique({
-            where:{email:email.toLowerCase().trim()},
-            select:{
-                id:true,
-                firstName:true,
-                lastName:true,
-                email:true,
-                passwordHash:true,
-                isActive:true,
-                emailVerified:true,
-                profileImageUrl:true,
-                createdAt:true,
-                role:{select:{name:true}}
-            }
-        });
-        if(!existingUser){
-            return NextResponse.json({success:false,message:"Invalid email or password"},{status:401});
-        }
-        if(!existingUser.isActive)
-        {
-            return NextResponse.json({success:false,message:"Your account has been deactivated Please contact Support"},{status:403})
-        }
-        const passwordMatch=await bcrypt.compare(password,existingUser.passwordHash);
-        if(!passwordMatch)
-        {
-            return NextResponse.json({success:false,message:"Invalid email or password"},{status:401});
-        }
-        if(!existingUser.emailVerified)
-        {
-            return NextResponse.json({success:false,message:"Please verify your email before logging in. Check your inbox."},{status:403});
-        }
-        const tokenPayload={
-            id:existingUser.id,
-            email:existingUser.email,
-            role:existingUser.role.name
-        }
-        const accessToken=signAccessToken(tokenPayload);
-        const refreshToken=signRefreshToken({id:existingUser.id});
-
-        const response = NextResponse.json({
-    success: true,
-    accessToken,
-    user: {
-        id: existingUser.id,
-        firstName: existingUser.firstName,
-        lastName: existingUser.lastName,
-        email: existingUser.email,
-        role: existingUser.role,
-        profileImageUrl: existingUser.profileImageUrl
+    if (!email || !password) {
+      return NextResponse.json(
+        { success: false, message: "Email and password are required" },
+        { status: 400 }
+      );
     }
-});
-        response.cookies.set("refreshToken",refreshToken,refreshCookieOptions);
-        return response;
-    } catch (error) {
-        console.error("Login error:",error);
-        return NextResponse.json({success:false,message:"Internal server Error"},{status:500});
+
+    // Find user
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { role: { select: { name: true } } },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Invalid email or password" },
+        { status: 401 }
+      );
     }
+
+    // Check email verified
+    if (!user.emailVerified) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Please verify your email before logging in",
+        },
+        { status: 403 }
+      );
+    }
+
+    // Check active
+    if (!user.isActive) {
+      return NextResponse.json(
+        { success: false, message: "Your account has been deactivated" },
+        { status: 403 }
+      );
+    }
+
+    // Verify password
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
+    if (!isMatch) {
+      return NextResponse.json(
+        { success: false, message: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
+
+    // Generate token — include role in payload
+    const token = generateToken({
+      id: user.id,
+      email: user.email,
+      roleId: user.roleId,
+      role: user.role?.name,
+    });
+
+    // Return user without password
+    const { passwordHash, emailVerificationToken, ...safeUser } = user;
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Login successful",
+        data: {
+          token,
+          user: safeUser,
+        },
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Login error:", error);
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }
