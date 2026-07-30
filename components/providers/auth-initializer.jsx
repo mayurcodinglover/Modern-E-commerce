@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUser, logout, setAuthLoading } from "../../app/store/slices/authSlice";
+import { clearAuthCookie } from "@/lib/logout";
 
 export function AuthInitializer(){
      const dispatch = useDispatch();
@@ -18,6 +19,7 @@ export function AuthInitializer(){
       const savedUser = localStorage.getItem("user");
 
       if (!token || !savedUser) {
+        clearAuthCookie();
         dispatch(logout());
         return;
       }
@@ -35,10 +37,12 @@ export function AuthInitializer(){
         // Token expired → clear everything
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        clearAuthCookie();
         dispatch(logout());
       }
     } catch (error) {
       console.error("Auth init failed", error);
+      clearAuthCookie();
       dispatch(logout());
     } finally {
       dispatch(setAuthLoading(false));

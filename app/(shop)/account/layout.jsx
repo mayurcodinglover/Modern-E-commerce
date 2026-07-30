@@ -7,6 +7,7 @@ import { logout } from "../../store/slices/authSlice";
 import { clearCart } from "../../store/slices/cartSlice";
 import { setWishlist } from "../../store/slices/wishlistSlice";
 import { cn } from "@/lib/utils";
+import { clearAuthCookie } from "@/lib/logout";
 import {
   User,
   ShoppingBag,
@@ -50,6 +51,7 @@ export default function AccountLayout({ children }) {
   function handleLogout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    clearAuthCookie();
     dispatch(logout());
     dispatch(clearCart());
     dispatch(setWishlist([]));
