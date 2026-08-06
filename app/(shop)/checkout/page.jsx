@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { newAddressSchema } from "@/lib/validations/auth.schema";
 import { toast } from "sonner";
+import { RazorpayPayment } from "@/components/payment/razorpay-payment";
 import {
   Form,
   FormControl,
@@ -107,6 +108,8 @@ export default function CheckoutContent() {
   const [placedOrder, setPlacedOrder] = useState(null);
   const [couponData, setCouponData] = useState(null);
   const [notes, setNotes] = useState("");
+  const [paymentDone, setPaymentDone] = useState(false);
+const [finalOrder, setFinalOrder] = useState(null);
 
   // ✅ Local cart state — fetched fresh from API
   const [cartItems, setCartItems] = useState([]);
@@ -215,13 +218,15 @@ export default function CheckoutContent() {
         body: JSON.stringify({ ...formData, userId: user.id }),
       });
       const data = await res.json();
+      console.log(data);
+      
       if (data.success) {
         toast.success("Address added successfully");
         setAddAddressOpen(false);
         addressForm.reset();
         fetchAddresses();
         // ✅ Fixed — use data.data.id not data.address.id
-        setSelectedAddressId(data.data.id);
+        setSelectedAddressId(data.address.id);
       } else {
         toast.error(data.message || "Failed to add address");
       }
@@ -290,16 +295,40 @@ export default function CheckoutContent() {
   const totalAmount = Math.max(0, subtotal - discountAmount + shippingAmount);
 
   // Order success screen
-  if (placedOrder && step === STEPS.PAYMENT) {
-    return (
-      <div className="max-w-lg mx-auto px-4 py-16 text-center">
-        <div className="bg-background border rounded-2xl p-8">
+// Order success screen — Step 3 shows PAYMENT
+if (placedOrder && step === STEPS.PAYMENT) {
+  return (
+    <div className="max-w-lg mx-auto px-4 py-8">
+
+      <h1 className="text-2xl font-semibold text-center mb-2">
+        Complete payment
+      </h1>
+      <StepIndicator currentStep={3} />
+
+      {!paymentDone ? (
+        <div className="bg-background border rounded-2xl p-6">
+          <RazorpayPayment
+            order={placedOrder}
+            onPaymentSuccess={(data) => {
+              setPaymentDone(true);
+              setFinalOrder(data);
+            }}
+            onPaymentFail={(reason) => {
+              console.error("Payment failed:", reason);
+            }}
+          />
+        </div>
+      ) : (
+        /* Payment success */
+        <div className="bg-background border rounded-2xl p-8 text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="h-8 w-8 text-green-600" />
           </div>
-          <h1 className="text-2xl font-semibold mb-2">Order placed!</h1>
+          <h1 className="text-2xl font-semibold mb-2">
+            Payment successful!
+          </h1>
           <p className="text-muted-foreground text-sm mb-4">
-            Your order has been placed successfully. We'll send you updates via email.
+            Your order has been confirmed. We'll send updates via email.
           </p>
           <div className="bg-secondary rounded-lg p-4 mb-6 text-left space-y-2">
             <div className="flex items-center justify-between text-sm">
@@ -309,15 +338,15 @@ export default function CheckoutContent() {
               </span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Total amount</span>
-              <span className="font-semibold">
+              <span className="text-muted-foreground">Amount paid</span>
+              <span className="font-semibold text-green-600">
                 ₹{Number(placedOrder.totalAmount).toFixed(0)}
               </span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Status</span>
-              <Badge className="bg-yellow-100 text-yellow-800 text-xs">
-                Pending payment
+              <Badge className="bg-green-100 text-green-800 text-xs">
+                Confirmed
               </Badge>
             </div>
           </div>
@@ -337,9 +366,10 @@ export default function CheckoutContent() {
             </Button>
           </div>
         </div>
-      </div>
-    );
-  }
+      )}
+    </div>
+  );
+}
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
