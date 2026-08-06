@@ -286,6 +286,7 @@ export default function CartPage() {
         }),
       });
       const data = await res.json();
+      console.log(data);
       if (data.success) {
         setAppliedCoupon(data.data);
         toast.success(`Coupon applied! You save ₹${data.data.discountAmount}`);

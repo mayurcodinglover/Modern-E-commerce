@@ -65,6 +65,7 @@ export default function OrdersPage() {
              toast.error("Failed to load orders");
         }
     }catch(error) {
+      console.log(error);
       toast.error("Something went wrong",error);
     } finally {
       setIsLoading(false);

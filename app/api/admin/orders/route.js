@@ -1,5 +1,5 @@
 import {NextResponse} from 'next/server'
-import prisma from '../../../lib/prisma';
+import prisma from '../../../../lib/prisma';
 import {z} from 'zod'
 
 const placeOrderSchema=z.object({
@@ -255,7 +255,6 @@ export async function POST(req) {
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("userId");
     const status = searchParams.get("status") || "";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -263,7 +262,6 @@ export async function GET(req) {
 
     const where = {
       ...(status && { status }),
-      ...(userId && { userId }),
     };
 
     const [orders, total] = await Promise.all([
