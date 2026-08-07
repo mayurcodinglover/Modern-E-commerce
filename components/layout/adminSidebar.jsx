@@ -1,14 +1,19 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 import { adminNavItems } from "@/config/admin-nav";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ShoppingBag, X } from "lucide-react";
+import { LogOut, ShoppingBag, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { logout } from "@/app/store/slices/authSlice";
+import { handleLogout } from "@/lib/logout";
 
 function SidebarContent({ onClose }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useDispatch();
   function isActive(href) {
     if (href === "/admin") return pathname === "/admin";
     return pathname.startsWith(href);
@@ -16,12 +21,12 @@ function SidebarContent({ onClose }) {
    return (
     <div className="flex flex-col h-full min-h-0">
       {/* Logo */}
-      <div className="flex items-center justify-between px-4 py-4 border-b">
+      <div className="flex items-center justify-between px-4 py-5 border-b border-white/15">
         <Link href="/admin" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
+          <div className="w-8 h-8 rounded-md bg-[#0d7c70] flex items-center justify-center">
             <ShoppingBag className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="font-semibold text-base">ShopAdmin</span>
+          <span className="font-display font-semibold text-xl tracking-[-0.06em]">Atelier / Admin</span>
           </Link>
            {onClose && (
           <Button
@@ -38,7 +43,7 @@ function SidebarContent({ onClose }) {
         <div className="space-y-6">
           {adminNavItems.map((section) => (
             <div key={section.title}>
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2 mb-2">
+              <p className="font-utility text-[10px] font-medium text-white/45 uppercase tracking-wider px-2 mb-2">
                 {section.title}
               </p>
               <div className="space-y-1">
@@ -51,10 +56,10 @@ function SidebarContent({ onClose }) {
                       href={item.href}
                       onClick={onClose}
                       className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
+                        "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
                         active
-                          ? "bg-primary text-primary-foreground font-medium"
-                          : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                          ? "bg-[#0d7c70] text-white font-medium"
+                          : "text-white/60 hover:text-white hover:bg-white/10"
                       )}
                     >
                       <Icon className="h-4 w-4 flex-shrink-0" />
@@ -69,25 +74,36 @@ function SidebarContent({ onClose }) {
       </ScrollArea>
 
       {/* Bottom user section */}
-      <div className="border-t p-4">
+      <div className="border-t border-white/15 p-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-sm font-medium">
+          <div className="w-8 h-8 rounded-full bg-[#0d7c70] text-white flex items-center justify-center text-sm font-medium">
             A
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">Admin User</p>
-            <p className="text-xs text-muted-foreground truncate">
+            <p className="text-sm font-medium text-white truncate">Admin User</p>
+            <p className="text-xs text-white/45 truncate">
               admin@shop.com
             </p>
           </div>
         </div>
+        <Button
+          variant="ghost"
+          className="mt-4 w-full justify-start gap-3 rounded-md text-white/65 hover:bg-white/10 hover:text-white"
+          onClick={() => {
+            onClose?.();
+            handleLogout(dispatch, logout, router);
+          }}
+        >
+          <LogOut className="h-4 w-4" />
+          Log out
+        </Button>
       </div>
     </div>
   );    
 }
 export function AdminSidebar() {
   return (
-    <aside className="hidden lg:flex w-64 flex-col border-r bg-background h-screen sticky top-0">
+    <aside className="hidden lg:flex w-64 flex-col border-r border-white/10 bg-[#14213d] text-white h-screen sticky top-0">
       <SidebarContent />
     </aside>
   );
@@ -102,7 +118,7 @@ export function AdminSidebarMobile({ open, onClose }) {
         onClick={onClose}
       />
       {/* Drawer */}
-      <div className="fixed left-0 top-0 h-full w-64 bg-background border-r z-50 lg:hidden">
+      <div className="fixed left-0 top-0 h-full w-64 bg-[#14213d] text-white border-r border-white/10 z-50 lg:hidden">
         <SidebarContent onClose={onClose} />
       </div>
     </>

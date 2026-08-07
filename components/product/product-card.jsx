@@ -71,15 +71,17 @@ export function ProductCard({ product, userId }) {
   }
   return (
     <Link href={`/products/${product.id}`}>
-      <div className="group border rounded-xl overflow-hidden hover:shadow-md transition-all duration-200 bg-background h-full flex flex-col">
+      <div className="group soft-border border overflow-hidden hover:-translate-y-1 transition-all duration-300 bg-card h-full flex flex-col editorial-shadow">
 
         {/* Image */}
-        <div className="relative aspect-square bg-secondary overflow-hidden">
+        <div className="relative aspect-[4/5] bg-secondary overflow-hidden">
           {primaryImage ? (
             <img
               src={primaryImage.imageUrl}
               alt={primaryImage.altText || product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
@@ -88,16 +90,16 @@ export function ProductCard({ product, userId }) {
           )}
 
           {/* Badges */}
-          <div className="absolute top-2 left-2 flex flex-col gap-1">
+          <div className="absolute top-0 left-0 flex flex-col gap-1">
             {discountPercent > 0 && (
-              <Badge className="bg-red-500 text-white text-xs px-1.5">
+              <Badge className="rounded-md bg-[#0d7c70] text-white text-[10px] font-utility px-2 py-1">
                 -{discountPercent}%
               </Badge>
             )}
             {!inStock && (
               <Badge
                 variant="secondary"
-                className="text-xs px-1.5"
+                className="rounded-md text-[10px] font-utility px-2 py-1"
               >
                 Out of stock
               </Badge>
@@ -107,7 +109,7 @@ export function ProductCard({ product, userId }) {
           {/* Wishlist button */}
           <button
             onClick={handleWishlistToggle}
-            className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all
+            className={`absolute top-3 right-3 w-9 h-9 border border-[#14213d]/10 rounded-full flex items-center justify-center shadow-sm transition-all
               ${
                 isInWishlist
                   ? "bg-red-500 text-white"
@@ -122,23 +124,23 @@ export function ProductCard({ product, userId }) {
         </div>
 
         {/* Info */}
-        <div className="p-3 flex flex-col flex-1">
+        <div className="p-4 flex flex-col flex-1 border-t border-[#14213d]/10">
           <div className="flex-1">
-            <p className="text-xs text-muted-foreground mb-0.5">
+            <p className="eyebrow text-[9px] text-[#0d7c70] mb-1">
               {product.category?.name}
             </p>
-            <h3 className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors">
+            <h3 className="font-display text-lg font-medium leading-tight line-clamp-2 group-hover:text-[#0d7c70] transition-colors">
               {product.name}
             </h3>
           </div>
 
           {/* Price */}
           <div className="flex items-center gap-2 mt-2">
-            <span className="text-base font-semibold">
+            <span className="font-utility text-sm font-medium">
               ₹{Number(finalPrice).toFixed(0)}
             </span>
             {product.discountPrice && (
-              <span className="text-sm text-muted-foreground line-through">
+              <span className="font-utility text-xs text-muted-foreground line-through">
                 ₹{Number(product.basePrice).toFixed(0)}
               </span>
             )}
@@ -146,7 +148,7 @@ export function ProductCard({ product, userId }) {
 
           {/* Variants count */}
           {product.variants?.length > 0 && (
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="font-utility text-[10px] text-muted-foreground mt-2">
               {product.variants.length} variant
               {product.variants.length !== 1 ? "s" : ""} available
             </p>

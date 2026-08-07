@@ -53,7 +53,7 @@ function StepIndicator({ currentStep }) {
         <div key={step.num} className="flex items-center">
           <div className="flex flex-col items-center">
             <div
-              className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium border-2 transition-all ${
+              className={`w-9 h-9 rounded-full flex items-center justify-center font-utility text-xs font-medium border-2 transition-all ${
                 currentStep > step.num
                   ? "bg-primary border-primary text-primary-foreground"
                   : currentStep === step.num
@@ -68,7 +68,7 @@ function StepIndicator({ currentStep }) {
               )}
             </div>
             <p
-              className={`text-xs mt-1 ${
+              className={`font-utility text-[10px] mt-1 ${
                 currentStep >= step.num
                   ? "text-foreground font-medium"
                   : "text-muted-foreground"
@@ -298,15 +298,15 @@ const [finalOrder, setFinalOrder] = useState(null);
 // Order success screen — Step 3 shows PAYMENT
 if (placedOrder && step === STEPS.PAYMENT) {
   return (
-    <div className="max-w-lg mx-auto px-4 py-8">
+    <div className="max-w-lg mx-auto px-4 py-12">
 
-      <h1 className="text-2xl font-semibold text-center mb-2">
+      <h1 className="text-4xl font-medium text-center mb-2">
         Complete payment
       </h1>
       <StepIndicator currentStep={3} />
 
       {!paymentDone ? (
-        <div className="bg-background border rounded-2xl p-6">
+        <div className="bg-card border border-[#14213d]/15 p-6 editorial-shadow">
           <RazorpayPayment
             order={placedOrder}
             onPaymentSuccess={(data) => {
@@ -320,7 +320,7 @@ if (placedOrder && step === STEPS.PAYMENT) {
         </div>
       ) : (
         /* Payment success */
-        <div className="bg-background border rounded-2xl p-8 text-center">
+        <div className="bg-card border border-[#14213d]/15 p-8 text-center editorial-shadow">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="h-8 w-8 text-green-600" />
           </div>
@@ -328,7 +328,7 @@ if (placedOrder && step === STEPS.PAYMENT) {
             Payment successful!
           </h1>
           <p className="text-muted-foreground text-sm mb-4">
-            Your order has been confirmed. We'll send updates via email.
+            Your order has been confirmed. We&apos;ll send updates via email.
           </p>
           <div className="bg-secondary rounded-lg p-4 mb-6 text-left space-y-2">
             <div className="flex items-center justify-between text-sm">
@@ -372,8 +372,9 @@ if (placedOrder && step === STEPS.PAYMENT) {
 }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-semibold text-center mb-2">Checkout</h1>
+    <div className="max-w-5xl mx-auto px-4 py-10 md:py-14">
+      <p className="eyebrow text-[#0d7c70] text-center mb-2">Atelier / secure checkout</p>
+      <h1 className="text-4xl md:text-5xl font-medium text-center mb-2">Checkout</h1>
       <StepIndicator currentStep={step} />
 
       <div className="grid lg:grid-cols-3 gap-8">
@@ -419,7 +420,7 @@ if (placedOrder && step === STEPS.PAYMENT) {
                     <div
                       key={addr.id}
                       onClick={() => setSelectedAddressId(addr.id)}
-                      className={`border rounded-xl p-4 cursor-pointer transition-all ${
+                  className={`border p-4 cursor-pointer transition-all ${
                         selectedAddressId === addr.id
                           ? "border-primary bg-primary/5"
                           : "hover:border-muted-foreground/50"
@@ -474,7 +475,7 @@ if (placedOrder && step === STEPS.PAYMENT) {
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Any special instructions..."
                   rows={3}
-                  className="w-full border rounded-md px-3 py-2 text-sm bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full border border-[#14213d]/20 rounded-md px-3 py-2 text-sm bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
                 />
               </div>
 
@@ -626,8 +627,8 @@ if (placedOrder && step === STEPS.PAYMENT) {
 
         {/* Right — Order summary */}
         <div>
-          <div className="border rounded-xl p-5 space-y-4 sticky top-20">
-            <h2 className="font-semibold">Order summary</h2>
+          <div className="border border-[#14213d]/20 bg-card p-5 space-y-4 sticky top-24 editorial-shadow">
+            <h2 className="font-display font-medium text-2xl">Order summary</h2>
 
             {cartLoading ? (
               <div className="space-y-2">

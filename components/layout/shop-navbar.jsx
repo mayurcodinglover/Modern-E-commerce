@@ -40,30 +40,30 @@ export function ShopNavbar() {
 
    return (
     <header
-      className={`sticky top-0 z-50 bg-background transition-shadow ${
-        scrolled ? "shadow-sm" : ""
-      } border-b`}
+      className={`sticky top-0 z-50 border-b border-[#14213d]/15 bg-[#f4f7f6]/92 backdrop-blur-xl transition-shadow ${
+        scrolled ? "shadow-[0_4px_0_rgb(20_33_61_/_0.06)]" : ""
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center h-16 gap-4">
+        <div className="flex items-center h-[4.5rem] gap-4">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
+          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
+            <div className="w-8 h-8 border border-primary bg-primary flex items-center justify-center transition-transform group-hover:-rotate-6">
               <ShoppingBag className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-semibold text-lg hidden sm:block">
-              ShopApp
+            <span className="font-display font-semibold text-xl tracking-[-0.07em] hidden sm:block">
+              Atelier
             </span>
           </Link>
 
             {/* Desktop nav links */}
-          <nav className="hidden md:flex items-center gap-6 ml-4">
+          <nav className="hidden md:flex items-center gap-5 ml-5">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="eyebrow text-[10px] text-muted-foreground hover:text-primary transition-colors"
               >
                 {link.label}
               </Link>
@@ -75,12 +75,12 @@ export function ShopNavbar() {
           {/* Search bar desktop */}
           <form
             onSubmit={handleSearch}
-            className="hidden md:flex items-center relative w-64"
+            className="hidden md:flex items-center relative w-56"
           >
             <Search className="h-4 w-4 absolute left-3 text-muted-foreground" />
             <Input
               placeholder="Search products..."
-              className="pl-9 h-9 text-sm"
+              className="pl-9 h-9 rounded-md border-[#14213d]/20 bg-transparent text-sm focus-visible:ring-[#0d7c70]"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -177,7 +177,7 @@ export function ShopNavbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="block px-2 py-2 text-sm text-muted-foreground hover:text-foreground rounded-md hover:bg-secondary"
+                className="block px-2 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary"
               >
                 {link.label}
               </Link>

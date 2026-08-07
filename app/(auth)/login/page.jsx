@@ -61,7 +61,7 @@ export default function LoginPage() {
         toast.success(`Welcome back, ${data.data.user.firstName}!`);
 
         // Redirect based on role
-        if (data.data.user.role === "admin") {
+        if (data.data.user.role?.name?.toLowerCase() === "admin") {
           router.push("/admin");
         } else {
           router.push("/");

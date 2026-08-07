@@ -21,7 +21,7 @@ export function AdminTopbar({ onMenuClick }) {
   const pathname = usePathname();
   const pageTitle = getPageTitle(pathname);
     return (
-    <header className="h-14 border-b bg-background flex items-center px-4 gap-4 sticky top-0 z-30">
+    <header className="h-16 border-b border-[#14213d]/15 bg-[#f4f7f6]/90 backdrop-blur flex items-center px-5 gap-4 sticky top-0 z-30">
       {/* Mobile menu button */}
       <Button
         variant="ghost"
@@ -33,7 +33,7 @@ export function AdminTopbar({ onMenuClick }) {
       </Button>
 
        {/* Page title */}
-      <h1 className="font-semibold text-base">{pageTitle}</h1>
+      <div><p className="eyebrow text-[#0d7c70] text-[9px] mb-0.5">Store operations</p><h1 className="font-display font-semibold text-xl">{pageTitle}</h1></div>
 
        {/* Spacer */}
       <div className="flex-1" />
@@ -43,7 +43,7 @@ export function AdminTopbar({ onMenuClick }) {
         <Search className="h-4 w-4 absolute left-3 text-muted-foreground" />
         <Input
           placeholder="Search..."
-          className="pl-9 h-8 text-sm"
+          className="pl-9 h-8 text-sm rounded-md bg-transparent"
         />
       </div>
 

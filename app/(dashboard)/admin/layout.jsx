@@ -7,7 +7,7 @@ export default function AdminLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
    return (
-    <div className="flex h-screen bg-background overflow-hidden">
+    <div className="flex h-screen bg-[#edf2f0] overflow-hidden">
       {/* Desktop Sidebar */}
       <AdminSidebar />
 
@@ -21,7 +21,7 @@ export default function AdminLayout({ children }) {
         <AdminTopbar onMenuClick={() => setSidebarOpen(true)} />
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto bg-muted/30">
+        <main className="flex-1 overflow-y-auto bg-[#edf2f0]">
           {children}
         </main>
       </div>

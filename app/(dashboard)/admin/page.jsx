@@ -13,16 +13,16 @@ import { Separator } from "@/components/ui/separator";
 
 function StatCard({ label, value, icon: Icon, color, sub }) {
   return (
-    <div className="bg-background border rounded-lg p-5">
+    <div className="bg-card border border-[#14213d]/15 rounded-md p-5 editorial-shadow">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm text-muted-foreground">{label}</p>
-          <p className="text-2xl font-semibold mt-1">{value}</p>
+          <p className="eyebrow text-[9px] text-muted-foreground">{label}</p>
+          <p className="font-utility text-2xl font-medium mt-2">{value}</p>
           {sub && (
             <p className="text-xs text-muted-foreground mt-1">{sub}</p>
           )}
         </div>
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${color}`}>
+        <div className={`w-10 h-10 rounded-md flex items-center justify-center ${color}`}>
           <Icon className="h-5 w-5" />
         </div>
       </div>
@@ -69,11 +69,12 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-5 md:p-8 space-y-7 max-w-7xl">
       <div>
-        <h2 className="text-xl font-semibold">Welcome back!</h2>
+        <p className="eyebrow text-[#0d7c70] mb-2">Atelier / command centre</p>
+        <h2 className="text-4xl font-medium">Welcome back.</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Here's what's happening in your store today.
+          Here&apos;s what&apos;s happening in your store today.
         </p>
       </div>
 
@@ -128,7 +129,7 @@ export default function AdminDashboard() {
               <a
                 key={action.href}
                 href={action.href}
-                className="flex items-center gap-3 p-3 border rounded-lg hover:bg-secondary transition-colors"
+                className="flex items-center gap-3 rounded-md p-4 border border-[#14213d]/15 bg-card hover:bg-[#14213d] hover:text-white transition-colors"
               >
                 <Icon className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm font-medium">{action.label}</span>

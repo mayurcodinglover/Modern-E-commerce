@@ -215,10 +215,10 @@ export default function ProductDetailPage() {
 
 
      return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-10 md:py-14">
 
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+      <div className="flex items-center gap-2 font-utility text-[10px] uppercase tracking-[0.08em] text-muted-foreground mb-7">
         <Link href="/" className="hover:text-foreground">
           Home
         </Link>
@@ -230,16 +230,16 @@ export default function ProductDetailPage() {
         <span className="text-foreground truncate">{product.name}</span>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-10">
+      <div className="grid md:grid-cols-[minmax(0,1.05fr)_minmax(20rem,.95fr)] gap-8 lg:gap-14">
 
         {/* Images */}
         <div className="space-y-3">
-          <div className="relative aspect-square rounded-xl overflow-hidden bg-secondary">
+          <div className="relative aspect-square overflow-hidden bg-secondary border border-[#14213d]/15 editorial-shadow">
             {images.length > 0 ? (
               <img
                 src={images[selectedImage]?.imageUrl}
                 alt={images[selectedImage]?.altText || product.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.025]"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
@@ -251,7 +251,7 @@ export default function ProductDetailPage() {
             {images.length > 1 && (
               <>
                 <button
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center hover:bg-white"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 border border-[#14213d]/15 bg-white/90 flex items-center justify-center hover:bg-[#14213d] hover:text-white"
                   onClick={() =>
                     setSelectedImage((i) =>
                       i === 0 ? images.length - 1 : i - 1
@@ -261,7 +261,7 @@ export default function ProductDetailPage() {
                   <ChevronLeft className="h-4 w-4" />
                 </button>
                 <button
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center hover:bg-white"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 border border-[#14213d]/15 bg-white/90 flex items-center justify-center hover:bg-[#14213d] hover:text-white"
                   onClick={() =>
                     setSelectedImage((i) =>
                       i === images.length - 1 ? 0 : i + 1
@@ -281,7 +281,7 @@ export default function ProductDetailPage() {
                 <button
                   key={img.id}
                   onClick={() => setSelectedImage(i)}
-                  className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                  className={`flex-shrink-0 w-16 h-16 overflow-hidden border-2 transition-all ${
                     selectedImage === i
                       ? "border-primary"
                       : "border-transparent"
@@ -303,11 +303,11 @@ export default function ProductDetailPage() {
 
           {/* Name + Category */}
           <div>
-            <p className="text-sm text-muted-foreground mb-1">
+            <p className="eyebrow text-[#0d7c70] mb-2">
               {product.category?.name}
               {product.subcategory && ` › ${product.subcategory.name}`}
             </p>
-            <h1 className="text-2xl font-semibold">{product.name}</h1>
+            <h1 className="text-4xl md:text-5xl font-medium leading-[.95]">{product.name}</h1>
             {product.title && (
               <p className="text-muted-foreground mt-1">{product.title}</p>
             )}
@@ -337,7 +337,7 @@ export default function ProductDetailPage() {
 
           {/* Price */}
           <div className="flex items-baseline gap-3">
-            <span className="text-3xl font-semibold">
+            <span className="font-utility text-2xl font-medium">
               ₹{finalPrice.toFixed(0)}
             </span>
             {product.discountPrice && (
@@ -346,7 +346,7 @@ export default function ProductDetailPage() {
               </span>
             )}
             {discountPercent > 0 && (
-              <Badge className="bg-red-500 text-white">
+              <Badge className="rounded-md bg-[#0d7c70] text-white font-utility text-[10px]">
                 -{discountPercent}% off
               </Badge>
             )}
@@ -370,7 +370,7 @@ export default function ProductDetailPage() {
                   <button
                     key={size.id}
                     onClick={() => setSelectedSize(size.id)}
-                    className={`px-3 py-1.5 rounded-md border text-sm font-medium transition-all ${
+                    className={`px-3 py-1.5 border text-sm font-medium transition-all ${
                       selectedSize === size.id
                         ? "border-primary bg-primary text-primary-foreground"
                         : "border-border hover:border-primary"
@@ -438,7 +438,7 @@ export default function ProductDetailPage() {
           {/* Quantity */}
           <div className="flex items-center gap-3">
             <p className="text-sm font-medium">Quantity:</p>
-            <div className="flex items-center border rounded-md">
+            <div className="flex items-center border border-[#14213d]/20">
               <button
                 className="px-3 py-2 hover:bg-secondary transition-colors"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -467,7 +467,7 @@ export default function ProductDetailPage() {
           {/* Action buttons */}
           <div className="flex gap-3">
             <Button
-              className="flex-1"
+              className="flex-1 rounded-md"
               size="lg"
               onClick={handleAddToCart}
               disabled={

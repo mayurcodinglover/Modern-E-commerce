@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 
 function ProductSkeleton() {
   return (
-    <div className="border rounded-xl overflow-hidden">
+    <div className="border border-border bg-card overflow-hidden">
       <Skeleton className="aspect-square w-full" />
       <div className="p-3 space-y-2">
         <Skeleton className="h-3 w-16" />
@@ -77,31 +77,33 @@ export default function HomePage() {
   ];
 
    return (
-    <div>
+    <div className="overflow-hidden">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary/10 via-background to-secondary/30 py-20 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-10">
+      <section className="relative overflow-hidden bg-[#14213d] px-4 py-16 md:py-24 lg:py-32">
+        <div className="absolute inset-0 bg-[url('/hero-editorial.png')] bg-cover bg-center" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#14213d] via-[#14213d]/80 to-[#14213d]/15" />
+        <div className="relative max-w-7xl mx-auto grid md:grid-cols-[1fr_auto] items-stretch gap-8">
           <div className="flex-1 text-center md:text-left">
-            <span className="inline-block text-xs font-medium bg-primary/10 text-primary px-3 py-1 rounded-full mb-4">
-              New collection available
+            <span className="eyebrow inline-block text-[#c7ddd6] border-b border-[#c7ddd6]/60 pb-2 mb-6">
+              Collection 01 — new season
             </span>
-            <h1 className="text-4xl md:text-5xl font-semibold leading-tight mb-4">
-              Discover Your
+            <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-medium leading-[.88] tracking-[-0.065em] mb-7 text-white">
+              Discover your
               <br />
-              <span className="text-primary">Perfect Style</span>
+              <span className="italic text-[#f4f7f6]">perfect style.</span>
             </h1>
-            <p className="text-muted-foreground text-lg mb-8 max-w-md">
+            <p className="text-white/75 text-base md:text-lg mb-9 max-w-md leading-relaxed">
               Shop the latest trends with unbeatable prices. Free shipping on orders above ₹499.
             </p>
             <div className="flex gap-3 justify-center md:justify-start flex-wrap">
               <Link href="/products">
-                <Button size="lg">
+                <Button size="lg" className="rounded-md bg-[#0d7c70] px-6 text-white hover:bg-[#09645b]">
                   Shop now
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </Link>
               <Link href="/products?sale=true">
-                <Button size="lg" variant="outline">
+                <Button size="lg" variant="outline" className="rounded-md border-white/50 bg-transparent text-white hover:bg-white hover:text-[#14213d]">
                   View sale
                 </Button>
               </Link>
@@ -109,16 +111,14 @@ export default function HomePage() {
           </div>
 
            {/* Hero image placeholder */}
-          <div className="flex-1 flex justify-center">
-            <div className="w-80 h-80 rounded-2xl bg-primary/10 flex items-center justify-center">
-              <ShoppingBag className="h-24 w-24 text-primary/30" />
-            </div>
+          <div className="hidden md:flex self-stretch items-end border-l border-white/30 pl-4">
+            <span className="edition-rail text-white/80">Atelier / Edited for now</span>
           </div>
         </div>
       </section>
 
        {/* Features bar */}
-      <section className="border-y bg-secondary/30 py-6 px-4">
+      <section className="border-y border-[#14213d]/15 bg-[#dde5e2]/55 py-5 px-4">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
           {features.map((feature) => {
             const Icon = feature.icon;
@@ -127,12 +127,12 @@ export default function HomePage() {
                 key={feature.title}
                 className="flex items-center gap-3"
               >
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Icon className="h-5 w-5 text-primary" />
+                <div className="w-9 h-9 border border-[#14213d]/15 bg-white flex items-center justify-center flex-shrink-0">
+                  <Icon className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium">{feature.title}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm font-semibold">{feature.title}</p>
+                  <p className="font-utility text-[10px] text-muted-foreground">
                     {feature.desc}
                   </p>
                 </div>
@@ -144,10 +144,10 @@ export default function HomePage() {
 
       {/* Categories */}
       {categories.length > 0 && (
-        <section className="py-12 px-4">
+        <section className="py-16 px-4">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold">Shop by category</h2>
+              <div><p className="eyebrow text-[#0d7c70] mb-2">Browse the edit</p><h2 className="text-3xl md:text-4xl font-medium">Shop by category</h2></div>
               <Link href="/products">
                 <Button variant="ghost" size="sm">
                   View all
@@ -162,8 +162,8 @@ export default function HomePage() {
                   href={`/products?categoryId=${cat.id}`}
                   className="group"
                 >
-                  <div className="border rounded-xl p-4 text-center hover:border-primary hover:bg-primary/5 transition-all">
-                    <div className="w-12 h-12 rounded-full bg-secondary mx-auto mb-2 overflow-hidden">
+                  <div className="border border-[#14213d]/15 p-4 text-center bg-card hover:bg-[#14213d] hover:text-white transition-colors duration-300">
+                    <div className="w-14 h-14 rounded-full bg-secondary mx-auto mb-3 overflow-hidden ring-1 ring-[#14213d]/10">
                       {cat.imageUrl ? (
                         <img
                           src={cat.imageUrl}
@@ -176,7 +176,7 @@ export default function HomePage() {
                         </div>
                       )}
                     </div>
-                    <p className="text-xs font-medium group-hover:text-primary transition-colors">
+                    <p className="eyebrow group-hover:text-white transition-colors">
                       {cat.name}
                     </p>
                   </div>
@@ -188,10 +188,10 @@ export default function HomePage() {
       )}
 
        {/* Featured products */}
-      <section className="py-12 px-4 bg-secondary/20">
+      <section className="py-16 px-4 bg-[#dde5e2]/50 border-y border-[#14213d]/10">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold">Featured products</h2>
+            <div><p className="eyebrow text-[#0d7c70] mb-2">The latest edit</p><h2 className="text-3xl md:text-4xl font-medium">Featured products</h2></div>
             <Link href="/products">
               <Button variant="ghost" size="sm">
                 View all

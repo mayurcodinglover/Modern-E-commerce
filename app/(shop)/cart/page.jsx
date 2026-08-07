@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 
 function CartItemSkeleton() {
   return (
-    <div className="flex gap-4 p-4 border rounded-xl">
+    <div className="flex gap-4 p-4 border border-[#14213d]/15 bg-card">
       <Skeleton className="w-24 h-24 rounded-lg flex-shrink-0" />
       <div className="flex-1 space-y-2">
         <Skeleton className="h-4 w-3/4" />
@@ -40,12 +40,12 @@ function CartItem({ item, onQuantityChange, onRemove, isUpdating }) {
 
   return (
     <div
-      className={`flex gap-4 p-4 border rounded-xl transition-opacity ${
+      className={`flex gap-4 p-4 border border-[#14213d]/15 bg-card transition-opacity ${
         isUpdating ? "opacity-60 pointer-events-none" : ""
       }`}
     >
       {/* Product image */}
-      <div className="w-24 h-24 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+      <div className="w-24 h-24 bg-secondary overflow-hidden flex-shrink-0">
         {primaryImage ? (
           <img
             src={primaryImage.imageUrl}
@@ -64,7 +64,7 @@ function CartItem({ item, onQuantityChange, onRemove, isUpdating }) {
           <div className="min-w-0">
             <Link
               href={`/products/${product?.id}`}
-              className="text-sm font-medium hover:text-primary truncate block"
+              className="font-display text-lg font-medium hover:text-[#0d7c70] truncate block"
             >
               {product?.name}
             </Link>
@@ -119,7 +119,7 @@ function CartItem({ item, onQuantityChange, onRemove, isUpdating }) {
         {/* Price + Quantity */}
         <div className="flex items-center justify-between mt-3">
           {/* Quantity controls */}
-          <div className="flex items-center border rounded-md">
+          <div className="flex items-center border border-[#14213d]/20">
             <button
               className="px-2.5 py-1.5 hover:bg-secondary transition-colors"
               onClick={() =>
@@ -148,7 +148,7 @@ function CartItem({ item, onQuantityChange, onRemove, isUpdating }) {
 
           {/* Price */}
           <div className="text-right">
-            <p className="text-sm font-semibold">
+            <p className="font-utility text-sm font-medium">
               ₹{Number(item.totalPrice).toFixed(0)}
             </p>
             {item.quantity > 1 && (
@@ -327,13 +327,14 @@ export default function CartPage() {
   const finalTotal = subtotal - discountAmount + shippingAmount;
 
    return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-10 md:py-14">
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-end justify-between mb-8 border-b border-[#14213d]/15 pb-6">
         <div>
-          <h1 className="text-2xl font-semibold">Shopping cart</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <p className="eyebrow text-[#0d7c70] mb-2">Atelier / Your selection</p>
+          <h1 className="text-4xl md:text-5xl font-medium">Shopping cart</h1>
+          <p className="font-utility text-[11px] text-muted-foreground mt-3">
             {isLoading
               ? "Loading..."
               : `${cartState.itemCount || 0} item${
@@ -371,7 +372,7 @@ export default function CartPage() {
           <ShoppingBag className="h-20 w-20 mx-auto text-muted-foreground/20 mb-4" />
           <h2 className="text-xl font-semibold mb-2">Your cart is empty</h2>
           <p className="text-muted-foreground mb-6">
-            Looks like you haven't added anything yet.
+            Looks like you haven&apos;t added anything yet.
           </p>
           <Link href="/products">
             <Button>
@@ -405,8 +406,8 @@ export default function CartPage() {
 
           {/* Order summary */}
           <div className="space-y-4">
-            <div className="border rounded-xl p-5 space-y-4 sticky top-20">
-              <h2 className="font-semibold text-lg">Order summary</h2>
+            <div className="border border-[#14213d]/20 bg-card p-5 space-y-4 sticky top-24 editorial-shadow">
+              <h2 className="font-display font-medium text-2xl">Order summary</h2>
 
               {/* Coupon input */}
               {!appliedCoupon ? (
@@ -510,7 +511,7 @@ export default function CartPage() {
                     : ""
                 }`}
               >
-                <Button className="w-full" size="lg">
+                <Button className="w-full rounded-md" size="lg">
                   Proceed to checkout
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>

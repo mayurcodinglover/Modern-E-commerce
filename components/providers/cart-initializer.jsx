@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCart } from "../../app/store/slices/cartSlice.js";
 import { setWishlist } from "../../app/store/slices/wishlistSlice.js";
@@ -10,26 +10,15 @@ export function CartInitializer() {
   const user = useSelector((state) => state.auth.user);
    const authLoading = useSelector((state) => state.auth.loading);
 
- useEffect(() => {
-    // Wait until auth is done loading
-    // Then load cart + wishlist if user exists
-    if (!authLoading && user) {
-      initializeCartAndWishlist();
-    }
-  }, [user, authLoading]);
-
-    async function initializeCartAndWishlist() {
+  const initializeCartAndWishlist = useCallback(async () => {
+    if (!user) return;
     try {
-      // Load cart
-      const cartRes = await fetch(`/api/cart?userId=${user.id}`);
-      const cartData = await cartRes.json();
-      if (cartData.success) {
-        dispatch(setCart(cartData));
-      }
-
-      // Load wishlist
-      const wishlistRes = await fetch(`/api/wishlist?userId=${user.id}`);
-      const wishlistData = await wishlistRes.json();
+      const [cartRes, wishlistRes] = await Promise.all([
+        fetch(`/api/cart?userId=${user.id}`),
+        fetch(`/api/wishlist?userId=${user.id}`),
+      ]);
+      const [cartData, wishlistData] = await Promise.all([cartRes.json(), wishlistRes.json()]);
+      if (cartData.success) dispatch(setCart(cartData));
       if (wishlistData.success) {
         dispatch(
           setWishlist(
@@ -43,7 +32,11 @@ export function CartInitializer() {
     } catch (error) {
       console.error("Failed to initialize cart", error);
     }
-  }
+  }, [user, dispatch]);
+
+ useEffect(() => {
+    if (!authLoading && user) initializeCartAndWishlist();
+  }, [user, authLoading, initializeCartAndWishlist]);
 
   return null;
 }

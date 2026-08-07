@@ -18,7 +18,7 @@ import { useSelector } from "react-redux";
 
 function ProductSkeleton() {
   return (
-    <div className="border rounded-xl overflow-hidden">
+    <div className="border border-border bg-card overflow-hidden">
       <Skeleton className="aspect-square w-full" />
       <div className="p-3 space-y-2">
         <Skeleton className="h-3 w-16" />
@@ -40,6 +40,7 @@ export default function ProductsPage() {
   const [page, setPage] = useState(1);
 
     const [search, setSearch] = useState(searchParams.get("search") || "");
+  const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
   const [categoryId, setCategoryId] = useState(
     searchParams.get("categoryId") || "all"
   );
@@ -89,11 +90,12 @@ export default function ProductsPage() {
 
   function handleSearch(e) {
     e.preventDefault();
+    setSearch(searchInput.trim());
     setPage(1);
-    fetchProducts();
   }
 
   function clearFilters() {
+    setSearchInput("");
     setSearch("");
     setCategoryId("all");
     setSortBy("newest");
@@ -106,19 +108,20 @@ export default function ProductsPage() {
   const totalPages = Math.ceil(total / limit);
 
    return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-10 md:py-14">
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-end justify-between mb-8 border-b border-[#14213d]/15 pb-6">
         <div>
-          <h1 className="text-2xl font-semibold">All products</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <p className="eyebrow text-[#0d7c70] mb-2">Atelier / Shop all</p>
+          <h1 className="text-4xl md:text-5xl font-medium">All products</h1>
+          <p className="font-utility text-[11px] text-muted-foreground mt-3">
             {isLoading ? "Loading..." : `${total} products found`}
           </p>
         </div>
       </div>
        {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-7 p-3 border border-[#14213d]/15 bg-card">
         {/* Search */}
         <form
           onSubmit={handleSearch}
@@ -128,12 +131,12 @@ export default function ProductsPage() {
             <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search products..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="pl-9 rounded-md"
             />
           </div>
-          <Button type="submit" variant="secondary">
+          <Button type="submit" variant="secondary" className="rounded-md">
             Search
           </Button>
         </form>
@@ -147,7 +150,7 @@ export default function ProductsPage() {
               setPage(1);
             }}
           >
-            <SelectTrigger className="w-44">
+            <SelectTrigger className="w-44 rounded-md">
               <SlidersHorizontal className="h-4 w-4 mr-2 text-muted-foreground" />
               <SelectValue placeholder="All categories" />
             </SelectTrigger>
@@ -163,7 +166,7 @@ export default function ProductsPage() {
 
           {/* Sort */}
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-40 rounded-md">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -188,10 +191,10 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      <Separator className="mb-6" />
+      <Separator className="mb-8" />
 
       {/* Products grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
         {isLoading
           ? Array.from({ length: 12 }).map((_, i) => (
               <ProductSkeleton key={i} />

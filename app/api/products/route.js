@@ -7,8 +7,8 @@ export async function GET(req) {
     const search = searchParams.get("search") || "";
     const categoryId = searchParams.get("categoryId") || "";
     const subcategoryId = searchParams.get("subcategoryId") || "";
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "12");
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);
+    const limit = Math.min(48, Math.max(1, parseInt(searchParams.get("limit") || "12", 10) || 12));
     const skip = (page - 1) * limit;
 
     const where = {
@@ -57,7 +57,7 @@ export async function GET(req) {
           totalPages: Math.ceil(total / limit),
         },
       },
-      { status: 200 }
+      { status: 200, headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" } }
     );
   } catch (error) {
      console.error(error);
