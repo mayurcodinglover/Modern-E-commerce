@@ -3,7 +3,7 @@ import React from 'react'
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { DataTable } from "@/components/data-table/data-table";
-import { ProductForm } from "@/components/forms/ProductForm";
+import { ProductForm } from "@/components/forms/productForm";
 import { getProductColumns } from "@/components/columns/product-columns";
 import { ConfirmDialog } from "@/components/data-table/confirm-dialog";
 import { ManageProductDialog } from "@/components/manage-product-dialog";

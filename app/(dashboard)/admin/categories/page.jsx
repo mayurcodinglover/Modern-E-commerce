@@ -3,7 +3,7 @@ import React from 'react'
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { DataTable } from "@/components/data-table/data-table";
-import  CategoryForm  from "@/components/forms/CategoryForm";
+import CategoryForm from "@/components/forms/categoryForm";
 import { getCategoryColumns } from "@/components/columns/category-columns";
 import { ConfirmDialog } from "@/components/data-table/confirm-dialog";
 import axios from "axios";
