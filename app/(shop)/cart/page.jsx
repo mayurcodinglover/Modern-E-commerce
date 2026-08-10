@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCart, removeItemLocally, clearCart ,updateItemQuantity} from "../../store/slices/cartSlice.js";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";

@@ -6,7 +6,7 @@ import {
   removeFromWishlistLocally,
 } from "../../store/slices/wishlistSlice";
 import { addItemLocally, setCart } from "../../store/slices/wishlistSlice";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

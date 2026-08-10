@@ -1,7 +1,7 @@
 "use client";
 import React from 'react'
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { DataTable } from "@/components/data-table/data-table";
 import  CategoryForm  from "@/components/forms/CategoryForm";
 import { getCategoryColumns } from "@/components/columns/category-columns";

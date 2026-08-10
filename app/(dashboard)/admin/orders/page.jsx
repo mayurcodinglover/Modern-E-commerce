@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { DataTable } from "@/components/data-table/data-table";
 import { getOrderColumns } from "@/components/columns/order-columns";
 import { OrderDetailDialog } from "@/components/order-detail-dialog";

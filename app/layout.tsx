@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "sonner";
+import { Toaster } from "react-hot-toast";
 import ReduxProvider from "../components/providers/redux-provider";
 import { CartInitializer } from "../components/providers/cart-initializer";
 import {AuthInitializer} from "../components/providers/auth-initializer";
@@ -35,7 +35,7 @@ export default function RootLayout({
           <AuthInitializer/>
            <CartInitializer />
            {children}
-           <Toaster richColors position="top-right" />
+           <Toaster position="top-right" />
         </ReduxProvider>
       </body>
     </html>

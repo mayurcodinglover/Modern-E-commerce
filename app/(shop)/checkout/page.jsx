@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { clearCart, setCart } from "../../store/slices/cartSlice";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { newAddressSchema } from "@/lib/validations/auth.schema";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { RazorpayPayment } from "@/components/payment/razorpay-payment";
 import {
   Form,
@@ -90,7 +90,7 @@ function StepIndicator({ currentStep }) {
   );
 }
 
-export default function CheckoutContent() {
+function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
@@ -831,5 +831,13 @@ if (placedOrder && step === STEPS.PAYMENT) {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div className="max-w-5xl mx-auto px-4 py-10 md:py-14" />}>
+      <CheckoutContent />
+    </Suspense>
   );
 }

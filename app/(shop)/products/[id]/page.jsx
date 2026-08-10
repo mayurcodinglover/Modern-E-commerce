@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setCart } from "../../../store/slices/cartSlice.js";  
 import { addToWishlistLocally, removeFromWishlistLocally } from "../../../store/slices/wishlistSlice.js";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useDispatch, useSelector } from "react-redux";
 import { addToWishlistLocally, removeFromWishlistLocally } from "../../app/store/slices/wishlistSlice";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import axios from "axios";
 
 export function ProductCard({ product, userId }) {

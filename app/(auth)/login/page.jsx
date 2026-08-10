@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/lib/validations/auth.schema";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../store/slices/authSlice";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import {
   Form,
   FormControl,

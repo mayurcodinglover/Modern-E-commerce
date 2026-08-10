@@ -1,7 +1,7 @@
 "use client";
 import React from 'react'
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { DataTable } from "@/components/data-table/data-table";
 import { ProductForm } from "@/components/forms/ProductForm";
 import { getProductColumns } from "@/components/columns/product-columns";

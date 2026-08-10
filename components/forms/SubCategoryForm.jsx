@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createSubcategorySchema } from "@/lib/validations/subcategory.schema";
 import { generateSlug } from "@/lib/utils/slug";
 import axios from "axios";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import {
   Form,
   FormControl,

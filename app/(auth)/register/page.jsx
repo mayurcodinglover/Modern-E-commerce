@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "@/lib/validations/auth.schema";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import {
   Form,
   FormControl,
