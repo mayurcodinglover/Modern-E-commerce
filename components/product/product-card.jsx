@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Heart, ShoppingCart, Package, Axis3DIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +13,8 @@ import axios from "axios";
 
 export function ProductCard({ product, userId }) {
     const dispatch = useDispatch();
+    const router = useRouter();
+    const pathname = usePathname();
     const wishlistItems = useSelector((state) => state.wishlist.items);
     const [addingToCart, setAddingToCart] = useState(false);
 
@@ -39,6 +42,7 @@ export function ProductCard({ product, userId }) {
     e.preventDefault();
     if (!userId) {
       toast.error("Please login to add to wishlist");
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
       return;
     }
 

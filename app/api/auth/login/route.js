@@ -67,7 +67,7 @@ export async function POST(req) {
     // Return user without password
     const { passwordHash, emailVerificationToken, ...safeUser } = user;
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: true,
         message: "Login successful",
@@ -78,6 +78,17 @@ export async function POST(req) {
       },
       { status: 200 }
     );
+
+    // Middleware runs on the server, so it must receive the token as a cookie.
+    response.cookies.set("token", token, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60,
+    });
+
+    return response;
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(

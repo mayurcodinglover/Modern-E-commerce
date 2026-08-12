@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setCart } from "../../../store/slices/cartSlice.js";  
 import { addToWishlistLocally, removeFromWishlistLocally } from "../../../store/slices/wishlistSlice.js";
@@ -23,6 +23,8 @@ import Link from "next/link";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const wishlistItems = useSelector((state) => state.wishlist.items);
@@ -105,6 +107,7 @@ export default function ProductDetailPage() {
      async function handleAddToCart() {
     if (!user) {
       toast.error("Please login to add to cart");
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
       return;
     }
     if (!selectedVariant) {
@@ -147,6 +150,7 @@ export default function ProductDetailPage() {
   async function handleWishlist() {
     if (!user) {
       toast.error("Please login to add to wishlist");
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
       return;
     }
     if (isInWishlist) {

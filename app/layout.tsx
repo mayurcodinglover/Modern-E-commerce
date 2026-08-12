@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Toaster } from "react-hot-toast";
 import ReduxProvider from "../components/providers/redux-provider";
 import { CartInitializer } from "../components/providers/cart-initializer";
 import {AuthInitializer} from "../components/providers/auth-initializer";
+import { ToastProvider } from "../components/providers/toast-provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,7 +22,7 @@ export default function RootLayout({
           <AuthInitializer/>
            <CartInitializer />
            {children}
-           <Toaster position="top-right" />
+           <ToastProvider />
         </ReduxProvider>
       </body>
     </html>

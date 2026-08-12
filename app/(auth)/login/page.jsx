@@ -1,7 +1,6 @@
 "use client"
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/lib/validations/auth.schema";
@@ -22,7 +21,6 @@ import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 export default function LoginPage() {
-  const router = useRouter();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,19 +50,21 @@ export default function LoginPage() {
       localStorage.setItem("user", JSON.stringify(data.data.user));
 
       // ✅ Save to cookie (for middleware/server-side use)
-      document.cookie = `token=${data.data.token}; path=/; max-age=${
-        7 * 24 * 60 * 60
-      }; SameSite=Lax`;
         console.log(data.data.user);
         
         dispatch(setUser(data.data.user));
         toast.success(`Welcome back, ${data.data.user.firstName}!`);
 
-        // Redirect based on role
+        // The API response has set the cookie used by server middleware.
         if (data.data.user.role?.name?.toLowerCase() === "admin") {
-          router.push("/admin");
+          window.location.assign("/admin");
         } else {
-          router.push("/");
+          const requestedPath = new URLSearchParams(window.location.search).get("redirect");
+          const destination =
+            requestedPath && requestedPath.startsWith("/") && !requestedPath.startsWith("//")
+              ? requestedPath
+              : "/";
+          window.location.assign(destination);
         }
       } else {
         toast.error(data.message || "Login failed");
@@ -174,7 +174,7 @@ export default function LoginPage() {
 
         {/* Register link */}
         <p className="text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             href="/register"
             className="text-primary font-medium hover:underline"
