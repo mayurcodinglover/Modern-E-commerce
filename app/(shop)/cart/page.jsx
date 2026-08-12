@@ -166,6 +166,7 @@ function CartItem({ item, onQuantityChange, onRemove, isUpdating }) {
 export default function CartPage() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  const authLoading = useSelector((state) => state.auth.loading);
   console.log(user);
   
   const cartState = useSelector((state) => state.cart);
@@ -305,6 +306,14 @@ export default function CartPage() {
     setCouponCode("");
     toast.success("Coupon removed");
   }
+    if (authLoading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <CartItemSkeleton />
+      </div>
+    );
+  }
+
     if (!user) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
@@ -313,7 +322,7 @@ export default function CartPage() {
         <p className="text-muted-foreground mb-6">
           You need to be logged in to view your cart.
         </p>
-        <Link href="/login">
+        <Link href="/login?redirect=%2Fcart">
           <Button>Login</Button>
         </Link>
       </div>

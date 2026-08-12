@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSelector } from "react-redux";
+import { toast } from "react-hot-toast";
 import { ShoppingBag, Heart, ShoppingCart, User, Menu, X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,7 @@ export function ShopNavbar() {
   const cartItemCount=useSelector((state)=>state.cart.itemCount);
   const wishlistCount=useSelector((state)=>state.wishlist.itemCount);
   const user = useSelector((state) => state.auth.user);
+  const authLoading = useSelector((state) => state.auth.loading);
 
    useEffect(() => {
     function handleScroll() {
@@ -30,6 +32,15 @@ export function ShopNavbar() {
     if (searchQuery.trim()) {
       window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`;
     }
+  }
+
+  function notifyLoginRequired(event, destination) {
+    if (authLoading) {
+      event.preventDefault();
+      return;
+    }
+    if (user) return;
+    toast.error(`Please login to view your ${destination}`);
   }
    const navLinks = [
     { label: "Home", href: "/" },
@@ -98,7 +109,11 @@ export function ShopNavbar() {
               <Search className="h-5 w-5" />
             </Button>
 
-             <Link href="/wishlist">
+             <Link
+              href={user ? "/wishlist" : "/login?redirect=%2Fwishlist"}
+              onClick={(event) => notifyLoginRequired(event, "wishlist")}
+              prefetch={Boolean(user)}
+            >
               <Button variant="ghost" size="icon" className="relative">
                 <Heart className="h-5 w-5" />
                 {wishlistCount > 0 && (
@@ -110,7 +125,11 @@ export function ShopNavbar() {
             </Link>
 
             {/* Cart */}
-            <Link href="/cart">
+            <Link
+              href={user ? "/cart" : "/login?redirect=%2Fcart"}
+              onClick={(event) => notifyLoginRequired(event, "cart")}
+              prefetch={Boolean(user)}
+            >
               <Button variant="ghost" size="icon" className="relative">
                 <ShoppingCart className="h-5 w-5" />
                 {cartItemCount > 0 && (

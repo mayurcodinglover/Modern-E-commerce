@@ -145,6 +145,7 @@ function WishlistItem({ item, onRemove, onAddToCart, isAddingToCart }) {
 export default function WishlistPage() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  const authLoading = useSelector((state) => state.auth.loading);
   const wishlistItems = useSelector((state) => state.wishlist.items);
 
   const [items, setItems] = useState([]);
@@ -214,6 +215,14 @@ export default function WishlistPage() {
       toast.error("Something went wrong");
     }
   }
+   if (authLoading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <WishlistSkeleton />
+      </div>
+    );
+  }
+
    if (!user) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
@@ -222,7 +231,7 @@ export default function WishlistPage() {
         <p className="text-muted-foreground mb-6">
           You need to be logged in to view your wishlist.
         </p>
-        <Link href="/login">
+        <Link href="/login?redirect=%2Fwishlist">
           <Button>Login</Button>
         </Link>
       </div>
