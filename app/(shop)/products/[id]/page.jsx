@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setCart } from "../../../store/slices/cartSlice.js";  
 import { addToWishlistLocally, removeFromWishlistLocally } from "../../../store/slices/wishlistSlice.js";
@@ -25,6 +25,7 @@ export default function ProductDetailPage() {
   const { id } = useParams();
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const wishlistItems = useSelector((state) => state.wishlist.items);
@@ -37,6 +38,8 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
   const [reviews, setReviews] = useState([]);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, title: "", body: "" });
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
 
   const isInWishlist = wishlistItems.some(
     (item) => item.productId === id
@@ -59,7 +62,7 @@ export default function ProductDetailPage() {
       setIsLoading(false);
     }
   }
-    async function fetchReviews() {
+  async function fetchReviews() {
     try {
       const res = await fetch(`/api/reviews?productId=${id}`);
       const data = await res.json();
@@ -67,6 +70,18 @@ export default function ProductDetailPage() {
     } catch {
       console.error("Failed to fetch reviews");
     }
+  }
+
+  async function submitReview(event) {
+    event.preventDefault();
+    if (!user) { router.push(`/login?redirect=${encodeURIComponent(pathname + "?review=true")}`); return; }
+    setReviewSubmitting(true);
+    try {
+      const res = await fetch("/api/reviews", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId: user.id, productId: id, orderId: searchParams.get("orderId"), rating: Number(reviewForm.rating), title: reviewForm.title, body: reviewForm.body }) });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || "Failed to submit review");
+      toast.success("Review submitted"); setReviews((current) => [data.data, ...current]); setReviewForm({ rating: 5, title: "", body: "" }); router.replace(pathname);
+    } catch (error) { toast.error(error.message); } finally { setReviewSubmitting(false); }
   }
    const sizes = product
     ? [...new Map(
@@ -510,6 +525,19 @@ export default function ProductDetailPage() {
           )}
         </div>
       </div>
+
+      {searchParams.get("review") === "true" && (
+        <div className="mt-12 border rounded-xl p-5 bg-background">
+          <h2 className="text-xl font-semibold mb-1">Write a review</h2>
+          <p className="text-sm text-muted-foreground mb-5">Share your experience with this product.</p>
+          <form onSubmit={submitReview} className="space-y-4 max-w-xl">
+            <div><p className="text-sm font-medium mb-2">Rating</p><div className="flex gap-1">{[1,2,3,4,5].map((rating) => <button type="button" key={rating} onClick={() => setReviewForm({ ...reviewForm, rating })}><Star className={`h-6 w-6 ${rating <= reviewForm.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"}`} /></button>)}</div></div>
+            <input className="w-full h-10 rounded-md border bg-background px-3 text-sm" placeholder="Review title (optional)" value={reviewForm.title} onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })} />
+            <textarea className="w-full min-h-28 rounded-md border bg-background px-3 py-2 text-sm" placeholder="Tell other shoppers about this product" value={reviewForm.body} onChange={(e) => setReviewForm({ ...reviewForm, body: e.target.value })} />
+            <Button type="submit" disabled={reviewSubmitting}>{reviewSubmitting ? "Submitting..." : "Submit review"}</Button>
+          </form>
+        </div>
+      )}
 
       {/* Reviews section */}
       {reviews.length > 0 && (

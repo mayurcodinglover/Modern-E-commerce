@@ -246,7 +246,7 @@ export default function OrderDetailPage() {
                   {/* Review button for delivered orders */}
                   {order.status === "delivered" && (
                     <Link
-                      href={`/products/${product?.id}?review=true`}
+                      href={`/products/${product?.id}?review=true&orderId=${order.id}`}
                     >
                       <Button
                         variant="ghost"

@@ -13,7 +13,7 @@ const createReviewSchema=z.object({
 
 export async function POST(req){
     try {
-        body=await req.json();
+        const body=await req.json();
         const parsed=createReviewSchema.safeParse(body);
 
         if(!parsed.success)
@@ -24,7 +24,7 @@ export async function POST(req){
             );
         }
         const {userId,productId,orderId,rating,title,body:reviewBody}=parsed.data;
-        const [user,product]=await promise.all([
+        const [user,product]=await Promise.all([
             prisma.user.findUnique({where:{id:userId}}),
             prisma.product.findUnique({where:{id:productId}})
         ]);
