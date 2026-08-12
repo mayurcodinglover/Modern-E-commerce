@@ -231,7 +231,14 @@ export default function WishlistPage() {
         <p className="text-muted-foreground mb-6">
           You need to be logged in to view your wishlist.
         </p>
-        <Link href="/login?redirect=%2Fwishlist">
+        <Link
+          href="/login?redirect=%2Fwishlist"
+          prefetch={false}
+          onClick={(event) => {
+            event.preventDefault();
+            window.location.assign("/login?redirect=%2Fwishlist");
+          }}
+        >
           <Button>Login</Button>
         </Link>
       </div>

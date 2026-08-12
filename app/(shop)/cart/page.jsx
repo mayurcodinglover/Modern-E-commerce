@@ -322,7 +322,14 @@ export default function CartPage() {
         <p className="text-muted-foreground mb-6">
           You need to be logged in to view your cart.
         </p>
-        <Link href="/login?redirect=%2Fcart">
+        <Link
+          href="/login?redirect=%2Fcart"
+          prefetch={false}
+          onClick={(event) => {
+            event.preventDefault();
+            window.location.assign("/login?redirect=%2Fcart");
+          }}
+        >
           <Button>Login</Button>
         </Link>
       </div>

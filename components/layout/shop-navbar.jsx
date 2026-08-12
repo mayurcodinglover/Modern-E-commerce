@@ -40,7 +40,14 @@ export function ShopNavbar() {
       return;
     }
     if (user) return;
+    event.preventDefault();
     toast.error(`Please login to view your ${destination}`);
+    window.location.assign(`/login?redirect=%2F${destination}`);
+  }
+
+  function goToLogin(event) {
+    event.preventDefault();
+    window.location.assign("/login");
   }
    const navLinks = [
     { label: "Home", href: "/" },
@@ -150,7 +157,7 @@ export function ShopNavbar() {
                 </Button>
               </Link>
             ) : (
-              <Link href="/login">
+              <Link href="/login" prefetch={false} onClick={goToLogin}>
                 <Button variant="ghost" size="icon">
                   <User className="h-5 w-5" />
                 </Button>

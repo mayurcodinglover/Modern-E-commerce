@@ -56,7 +56,9 @@ export default function AccountLayout({ children }) {
     dispatch(clearCart());
     dispatch(setWishlist([]));
     toast.success("Logged out successfully");
-    router.push("/");
+    // Force a fresh server request after logout so cached authenticated routes
+    // cannot redirect a later /login navigation back to the home page.
+    window.location.replace("/");
   }
 
   return (
